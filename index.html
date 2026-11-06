@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#092F4B">
   <title>Atlas Eléctrico de México · Eco Solare</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIINfQ3ynELHlgOuzA2t1ZcHn4PR5oNqObY=" crossorigin="">
   <style>
 :root{
   --green:#08783F;--navy:#092F4B;--turquoise:#087F91;--yellow:#FFAD18;--white:#FFFFFF;--gray:#EDF4F0;
@@ -44,6 +43,29 @@ main{width:min(1240px,calc(100% - 32px));margin:26px auto 70px}.status-panel{bac
 @media(max-width:1100px){.findings-grid{grid-template-columns:repeat(3,1fr)}.impact-grid{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:800px){.findings-grid{grid-template-columns:repeat(2,1fr)}.impact-grid,.iteration-grid,.source-library,.qa-list{grid-template-columns:1fr}.finding-viz>div{grid-template-columns:105px 1fr}}
 @media(max-width:520px){.findings-grid{grid-template-columns:1fr}.timeline-item{grid-template-columns:38px 1fr}.timeline-marker{width:38px;height:38px}.timeline:before{left:18px}}
+
+
+/* Mapa vectorial recortado: sin mosaicos externos, sin desalineación */
+.atlas-map{position:relative;height:auto;min-height:360px;aspect-ratio:1050/790;background:linear-gradient(145deg,#d6edf2,#eef8f6 58%,#c9e2e8);overflow:hidden}
+.atlas-map .mexico-svg{width:100%;height:100%;display:block;touch-action:pan-y}
+.atlas-map .mexico-land{fill:#d8ebd6;stroke:#6a9d8a;stroke-width:2.5;stroke-linejoin:round;filter:drop-shadow(0 8px 10px rgba(9,47,75,.16))}
+.atlas-map .mexico-shore{fill:none;stroke:#fff;stroke-width:1.4;opacity:.6}
+.atlas-map .map-grid{stroke:#fff;stroke-width:1;opacity:.32}
+.atlas-map .map-pin{cursor:pointer;outline:none;transition:opacity .15s}
+.atlas-map .map-pin .pin-outer{fill:#fff;stroke:#092F4B;stroke-width:2.5}
+.atlas-map .map-pin .pin-inner{stroke:#fff;stroke-width:1.5}
+.atlas-map .map-pin:hover .pin-outer,.atlas-map .map-pin:focus .pin-outer{stroke:#FFAD18;stroke-width:5}
+.atlas-map .map-pin:focus-visible{filter:drop-shadow(0 0 8px #FFAD18)}
+.atlas-map .map-pin text{font-size:15px;font-weight:800;text-anchor:middle;dominant-baseline:middle;pointer-events:none}
+.atlas-map .map-hover-card{position:absolute;z-index:5;left:14px;bottom:14px;width:min(330px,calc(100% - 28px));background:#fff;border:1px solid #bcd5cb;border-radius:14px;padding:13px 15px;box-shadow:0 8px 26px #092f4b29;pointer-events:none;font-size:.84rem;color:#092F4B}
+.atlas-map .map-hover-card strong{display:block;font-size:1rem;margin-bottom:4px}
+.atlas-map .map-hover-card small{display:block;color:#52636a;margin-top:5px;line-height:1.4}
+.atlas-map .map-hover-card[hidden]{display:none}
+.atlas-map .map-legend{position:absolute;top:12px;left:12px;display:flex;gap:5px;flex-wrap:wrap;max-width:calc(100% - 115px);pointer-events:none}
+.atlas-map .map-legend span{background:#fffdf3e8;color:#092F4B;padding:4px 7px;border-radius:7px;font-size:.73rem;font-weight:700;box-shadow:0 1px 4px #092f4b16}
+.atlas-map .map-zoom{position:absolute;right:12px;top:12px;display:flex;gap:5px}
+.atlas-map .map-zoom button{width:31px;height:31px;background:#fff;border:1px solid #aec9c2;border-radius:7px;color:#092F4B;cursor:pointer;font-size:18px}
+@media(max-width:700px){.atlas-map{min-height:300px;aspect-ratio:1.1}.atlas-map .map-legend{max-width:calc(100% - 96px)}.atlas-map .map-legend span{font-size:.65rem}.atlas-map .map-hover-card{font-size:.75rem;padding:9px}}
 
 </style>
 </head>
@@ -197,7 +219,7 @@ main{width:min(1240px,calc(100% - 32px));margin:26px auto 70px}.status-panel{bac
     </section>
     <p class="stage-source">Fuentes principales: CFE, <em>Informe Anual 2024</em>, pp. 20–27, 63, 273–294; SENER, <em>PRODESEN 2024–2038, Anexo 1</em>, cuadro de principales centrales.</p>
     <div class="section-head"><div><p class="eyebrow">Geografía de generación</p><h2>Centrales eléctricas seleccionadas</h2></div></div>
-    <div class="filter-row"><label>Tecnología <select id="plantTechFilter"><option value="all">Todas</option></select></label><label>Entidad <select id="plantStateFilter"><option value="all">Todas</option></select></label><span class="source-chip">Marcadores municipales de referencia; no son coordenadas exactas de planta</span></div>
+    <div class="filter-row"><label>Tecnología <select id="plantTechFilter"><option value="all">Todas</option></select></label><label>Entidad <select id="plantStateFilter"><option value="all">Todas</option></select></label><span class="source-chip">Mapa vectorial recortado · puntos de referencia, salvo coordenadas documentadas</span></div>
     <div id="generationMap" class="atlas-map" aria-label="Mapa de centrales eléctricas"></div>
     <div id="plantCount" class="map-footnote"></div>
 
@@ -302,7 +324,6 @@ main{width:min(1240px,calc(100% - 32px));margin:26px auto 70px}.status-panel{bac
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <script>
 const DB = {"meta":{"project":"Atlas Eléctrico de México: de los recursos energéticos al consumidor","course":"TE1020 - Análisis de Circuitos Eléctricos","brand":"Eco Solare","stage":"Etapas 2-11","data_policy":"Los valores cuantitativos proceden de los documentos cargados. Los cálculos derivados se etiquetan explícitamente. Los factores de emisión no documentados se muestran como Dato no disponible."},"sources":[{"id":"cfe2022","institution":"CFE","document":"Informe Anual 2022","year":2022,"page":"p. 293 del informe (indicadores consolidados de generación)","scope":"CFE"},{"id":"cfe2023","institution":"CFE","document":"Informe Anual 2023","year":2023,"page":"pp. 17-18 del informe","scope":"CFE"},{"id":"cfe2024gen","institution":"CFE","document":"Informe Anual 2024","year":2024,"page":"pp. 26-27 del informe","scope":"CFE"},{"id":"prodesen2023","institution":"SENER","document":"PRODESEN 2023-2037, Capítulo 4","year":2023,"page":"p. 59","scope":"Sistema Eléctrico Nacional"},{"id":"lse2025","institution":"DOF / Poder Ejecutivo Federal","document":"Ley del Sector Eléctrico","year":2025,"page":"p. 3","scope":"Marco jurídico"},{"id":"manual","institution":"Eco Solare","document":"Manual de Identidad Corporativa 2.0","year":2026,"page":"pp. 5-11","scope":"Identidad visual"}],"indicators":[{"id":"sen_total_2022","scope":"SEN","metric":"Generación total","year":2022,"value":340713,"unit":"GWh","kind":"observed","source":"prodesen2023"},{"id":"sen_clean_pct_2022","scope":"SEN","metric":"Participación de energías limpias","year":2022,"value":31.2,"unit":"%","kind":"reported","source":"prodesen2023"},{"id":"sen_fossil_pct_2022","scope":"SEN","metric":"Participación de energías fósiles","year":2022,"value":68.8,"unit":"%","kind":"reported","source":"prodesen2023"},{"id":"cfe_clean_pct_2022","scope":"CFE","metric":"Energía generada con energías limpias y/o diversas","year":2022,"value":35.97,"unit":"%","kind":"reported","source":"cfe2022","note":"Indicador consolidado reportado por CFE; no se recalcula con otra serie de generación."},{"id":"cfe_total_2023","scope":"CFE","metric":"Generación bruta total","year":2023,"value":150462,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_clean_gwh_2023","scope":"CFE","metric":"Energías limpias inyectadas a la red","year":2023,"value":35824,"unit":"GWh","kind":"reported","source":"cfe2023"},{"id":"cfe_clean_pct_2023","scope":"CFE","metric":"Participación limpia","year":2023,"value":24.7,"unit":"%","kind":"reported","source":"cfe2023","note":"El porcentaje oficial no coincide con 35,824 / 150,462. Se conserva como dato reportado por posible diferencia de alcance o denominador."},{"id":"cfe_total_2024","scope":"CFE","metric":"Generación bruta total","year":2024,"value":154059,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_clean_gwh_2024","scope":"CFE","metric":"Generación bruta de energías limpias","year":2024,"value":38982.9,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_clean_pct_2024","scope":"CFE","metric":"Participación limpia","year":2024,"value":25.3,"unit":"%","kind":"reported","source":"cfe2024gen"},{"id":"cfe_cc_2023","scope":"CFE","metric":"Ciclo combinado","year":2023,"value":58234,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_vapor_2023","scope":"CFE","metric":"Vapor convencional","year":2023,"value":29336,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_coal_2023","scope":"CFE","metric":"Carboeléctrica","year":2023,"value":15307,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_geo_2023","scope":"CFE","metric":"Geotermoeléctrica","year":2023,"value":4321,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_nuclear_2023","scope":"CFE","metric":"Nucleoeléctrica","year":2023,"value":12386,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_hydro_2023","scope":"CFE","metric":"Hidroeléctrica","year":2023,"value":19568,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_wind_2023","scope":"CFE","metric":"Eoloeléctrica","year":2023,"value":86,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_solar_2023","scope":"CFE","metric":"Solar fotovoltaica","year":2023,"value":274,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_cc_2024","scope":"CFE","metric":"Ciclo combinado","year":2024,"value":61490,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_vapor_2024","scope":"CFE","metric":"Vapor convencional","year":2024,"value":28135,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_coal_2024","scope":"CFE","metric":"Carboeléctrica","year":2024,"value":14012,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_geo_2024","scope":"CFE","metric":"Geotermoeléctrica","year":2024,"value":3692.5,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_nuclear_2024","scope":"CFE","metric":"Nucleoeléctrica","year":2024,"value":12306.6,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_hydro_2024","scope":"CFE","metric":"Hidroeléctrica","year":2024,"value":22354.2,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_wind_2024","scope":"CFE","metric":"Eoloeléctrica","year":2024,"value":74.7,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_solar_2024","scope":"CFE","metric":"Solar fotovoltaica","year":2024,"value":554.9,"unit":"GWh","kind":"observed","source":"cfe2024gen"},{"id":"cfe_renew_identified_2024","scope":"CFE","metric":"Renovables identificadas en tabla limpia (hidro + geo + eólica + solar)","year":2024,"value":26676.3,"unit":"GWh","kind":"derived","source":"cfe2024gen","formula":"22354.2 + 3692.5 + 74.7 + 554.9"},{"id":"cfe_renew_identified_pct_2024","scope":"CFE","metric":"Participación de renovables identificadas","year":2024,"value":17.31564,"unit":"%","kind":"derived","source":"cfe2024gen","formula":"26676.3 / 154059 * 100"}],"resource_taxonomy":[{"id":"gas","name":"Gas natural","family":"Fósil","role":"Combustible","renewable":"No","clean":"No por su naturaleza fósil","conversion":"Combustión → energía térmica → turbina/motor → electricidad","technologies":"Ciclo combinado, turbogás, vapor convencional, combustión interna","weather":"Baja dependencia meteorológica directa","dispatchability":"Generalmente controlable según disponibilidad de combustible y unidad","direct_emissions":"Existen por combustión; factor cuantitativo no disponible en fuentes cargadas","lifecycle_emissions":"Dato no disponible"},{"id":"coal","name":"Carbón mineral","family":"Fósil","role":"Combustible","renewable":"No","clean":"No","conversion":"Combustión → calor → vapor → turbina → electricidad","technologies":"Carboeléctrica / vapor","weather":"Baja dependencia meteorológica directa","dispatchability":"Generalmente controlable según inventario y unidad","direct_emissions":"Existen por combustión; factor cuantitativo no disponible","lifecycle_emissions":"Dato no disponible"},{"id":"fuel_oil","name":"Combustóleo","family":"Fósil","role":"Combustible","renewable":"No","clean":"No","conversion":"Combustión → calor → vapor o turbina → electricidad","technologies":"Vapor convencional; algunas unidades pueden usarlo como combustible alterno","weather":"Baja dependencia meteorológica directa","dispatchability":"Generalmente controlable","direct_emissions":"Existen por combustión; factor cuantitativo no disponible","lifecycle_emissions":"Dato no disponible"},{"id":"diesel","name":"Diésel","family":"Fósil","role":"Combustible","renewable":"No","clean":"No","conversion":"Combustión → motor/turbina → electricidad","technologies":"Combustión interna, turbogás y combustibles alternos en ciertos diseños","weather":"Baja dependencia meteorológica directa","dispatchability":"Generalmente controlable","direct_emissions":"Existen por combustión; factor cuantitativo no disponible","lifecycle_emissions":"Dato no disponible"},{"id":"uranium","name":"Uranio","family":"Nuclear","role":"Recurso / combustible nuclear","renewable":"No","clean":"Sí, la nucleoeléctrica aparece dentro de Energías Limpias en la LSE 2025","conversion":"Fisión → calor → vapor → turbina → electricidad","technologies":"Nucleoeléctrica","weather":"Baja dependencia meteorológica directa","dispatchability":"Programable con restricciones operativas y de recarga","direct_emissions":"Sin combustión fósil en la generación; factor de ciclo de vida no disponible","lifecycle_emissions":"Dato no disponible"},{"id":"solar","name":"Radiación solar","family":"Renovable","role":"Recurso energético primario","renewable":"Sí","clean":"Sí según LSE 2025","conversion":"Radiación → efecto fotovoltaico → electricidad","technologies":"Solar fotovoltaica","weather":"Alta dependencia de irradiancia, nubosidad y ciclo día/noche","dispatchability":"Variable sin almacenamiento o respaldo","direct_emissions":"Sin combustión durante la generación; factor cuantitativo no disponible","lifecycle_emissions":"Dato no disponible"},{"id":"wind","name":"Viento","family":"Renovable","role":"Recurso energético primario","renewable":"Sí","clean":"Sí según LSE 2025","conversion":"Energía cinética → rotor/aerogenerador → generador → electricidad","technologies":"Eoloeléctrica","weather":"Alta dependencia de velocidad del viento","dispatchability":"Variable","direct_emissions":"Sin combustión durante la generación; factor cuantitativo no disponible","lifecycle_emissions":"Dato no disponible"},{"id":"water","name":"Energía hidráulica","family":"Renovable","role":"Recurso energético primario","renewable":"Sí","clean":"Sí según LSE 2025","conversion":"Energía potencial/cinética → turbina → generador → electricidad","technologies":"Hidroeléctrica","weather":"Depende de disponibilidad hídrica y manejo de embalses","dispatchability":"Puede ser controlable dentro de restricciones hidráulicas","direct_emissions":"Sin combustión fósil durante la generación; factor cuantitativo no disponible","lifecycle_emissions":"Dato no disponible"},{"id":"geo","name":"Calor geotérmico","family":"Renovable","role":"Recurso energético primario","renewable":"Sí","clean":"Sí según LSE 2025","conversion":"Calor geotérmico → vapor/fluido → turbina → electricidad","technologies":"Geotermoeléctrica","weather":"Baja dependencia meteorológica directa","dispatchability":"Generalmente estable dentro de límites del yacimiento","direct_emissions":"Factor cuantitativo no disponible en fuentes cargadas","lifecycle_emissions":"Dato no disponible"},{"id":"bio","name":"Biomasa / biogás renovable","family":"Renovable","role":"Recurso / combustible renovable","renewable":"Sí cuando su origen es renovable","clean":"La LSE 2025 contempla biocombustibles y ciertos gases bajo condiciones regulatorias","conversion":"Conversión/combustión o aprovechamiento de biogás → motor/turbina → electricidad","technologies":"Bioenergía","weather":"Depende de disponibilidad del recurso","dispatchability":"Puede ser programable con inventario suficiente","direct_emissions":"Puede existir combustión; factor cuantitativo no disponible","lifecycle_emissions":"Dato no disponible"}],"technology_series":{"2023":{"Ciclo combinado":58234,"Vapor convencional":29336,"Carboeléctrica":15307,"Geotermoeléctrica":4321,"Nucleoeléctrica":12386,"Hidroeléctrica":19568,"Eoloeléctrica":86,"Solar fotovoltaica":274},"2024":{"Ciclo combinado":61490,"Vapor convencional":28135,"Carboeléctrica":14012,"Geotermoeléctrica":3692.5,"Nucleoeléctrica":12306.6,"Hidroeléctrica":22354.2,"Eoloeléctrica":74.7,"Solar fotovoltaica":554.9}},"clean_share_cfe":[{"year":2022,"value":35.97,"status":"reported","source":"cfe2022"},{"year":2023,"value":24.7,"status":"reported-with-denominator-warning","source":"cfe2023"},{"year":2024,"value":25.3,"status":"reported","source":"cfe2024gen"}],"validation":[{"id":"v1","severity":"warning","message":"CFE 2023 reporta 35,824 GWh limpios y 24.7%; 35,824/150,462 = 23.81%. No se sustituye el 24.7% por el cálculo porque las series pueden tener alcance/denominador distinto."},{"id":"v2","severity":"warning","message":"El 35.97% de 2022 se conserva como indicador oficial reportado; no se asume que sea directamente equivalente al cociente de otra serie bruta o neta."},{"id":"v3","severity":"info","message":"PRODESEN 2023-2037 proporciona una división nacional limpia/fósil para 2022, pero con los archivos cargados no existe todavía una serie nacional homogénea completa 2022-2024."},{"id":"v4","severity":"info","message":"No se cargaron factores documentados de emisiones de ciclo de vida; el comparador muestra Dato no disponible para esos valores."}]};
 
@@ -581,6 +602,52 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
     node.innerHTML=entries.map(x=>`<div class="bar-row"><span class="bar-name">${x.name}</span><div class="bar-track"><div class="bar-fill" style="width:${x.value/max*100}%"></div></div><span class="bar-value">${nf(x.value,digits)}</span></div>`).join('');
   }
 
+
+  // Imagen vectorial de México: contorno Natural Earth (datos geográficos simplificados).
+  // Los puntos son referencias geográficas documentadas o municipales; NO polígonos de cobertura.
+  const MEXICO_OUTLINE='M56.2,55.7 L128.4,48.6 L125.6,56.0 L239.3,101.3 L322.7,101.0 L322.8,85.3 L374.8,85.3 L418.9,127.5 L436.3,168.3 L451.8,179.7 L476.7,191.1 L495.6,161.1 L520.1,160.4 L541.3,175.5 L584.4,245.5 L599.4,289.9 L655.8,308.9 L638.9,369.7 L633.8,439.1 L654.3,507.9 L693.0,576.5 L724.8,586.6 L737.2,602.5 L827.8,574.7 L846.8,559.2 L861.6,494.0 L913.7,475.2 L958.4,473.3 L965.6,481.4 L964.6,499.7 L941.4,545.4 L946.9,552.0 L934.9,598.1 L927.3,588.4 L915.3,589.5 L904.5,612.4 L840.0,614.9 L839.9,636.3 L826.4,636.4 L856.8,668.4 L856.1,681.4 L817.6,681.5 L803.1,712.4 L807.4,719.5 L803.2,739.5 L753.7,686.3 L729.3,676.4 L673.3,697.2 L545.1,639.5 L512.4,611.2 L465.0,596.9 L452.5,579.6 L420.2,558.0 L405.2,534.0 L398.1,515.5 L408.1,511.8 L405.0,501.0 L412.0,478.0 L389.1,426.6 L317.9,335.5 L292.2,319.9 L286.7,310.7 L291.3,287.2 L258.2,259.8 L250.8,233.3 L234.6,230.2 L203.2,191.7 L175.1,122.1 L175.5,107.5 L126.7,83.6 L121.9,99.0 L129.8,145.8 L175.8,212.4 L181.1,211.8 L187.2,236.4 L221.5,278.8 L248.7,348.6 L250.3,368.7 L264.8,369.9 L287.7,404.1 L274.4,424.9 L241.5,380.0 L204.5,351.9 L201.0,303.5 L166.1,274.8 L162.1,279.7 L136.0,260.6 L118.3,238.5 L132.9,237.8 L144.0,223.6 L145.1,206.5 L104.4,168.9 L56.2,55.7Z';
+  const mapZoom={};
+  function escapeMap(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+  function mapXY(lat,lng){return{x:(lng+119)*30,y:(34-lat)*38};}
+  function renderMexicoImage(id,items,legend){
+    const node=document.getElementById(id);if(!node)return;
+    const z=mapZoom[id]||1;
+    const cx=520,cy=390,w=1050/z,h=790/z;
+    const view=[cx-w/2,cy-h/2,w,h].join(' ');
+    const marks=items.map((p,i)=>{
+      const {x,y}=mapXY(p.lat,p.lng),color=p.color||'#08783F';
+      return '<g class="map-pin" data-pin="'+i+'" role="button" tabindex="0" aria-label="'+escapeMap(p.name)+'" transform="translate('+x.toFixed(2)+' '+y.toFixed(2)+')">'+
+        '<circle class="pin-outer" r="14"/><circle class="pin-inner" r="11" fill="'+color+'"/>'+
+        '<text fill="'+(p.textColor||'#fff')+'" y="1">'+escapeMap(p.icon||'⚡')+'</text></g>';
+    }).join('');
+    node.innerHTML='<svg class="mexico-svg" xmlns="http://www.w3.org/2000/svg" viewBox="'+view+'" role="img" aria-label="Silueta geográfica de México con '+items.length+' ubicaciones interactivas">'+
+      '<defs><pattern id="ocean-'+id+'" width="70" height="70" patternUnits="userSpaceOnUse"><path d="M70 0H0V70" fill="none" stroke="#fff" stroke-opacity=".20"/></pattern></defs>'+
+      '<rect width="1050" height="790" fill="url(#ocean-'+id+')"/>'+
+      '<path class="mexico-land" d="'+MEXICO_OUTLINE+'"/>'+
+      '<text x="375" y="380" font-size="24" font-weight="800" fill="#08783F" opacity=".18" pointer-events="none">MÉXICO</text>'+
+      marks+'</svg>'+
+      '<div class="map-legend">'+legend.map(l=>'<span>'+escapeMap(l)+'</span>').join('')+'</div>'+
+      '<div class="map-zoom"><button type="button" data-zoom="plus" aria-label="Acercar mapa">+</button><button type="button" data-zoom="minus" aria-label="Alejar mapa">−</button><button type="button" data-zoom="reset" aria-label="Restablecer zoom">↺</button></div>'+
+      '<div class="map-hover-card" hidden aria-live="polite"></div>';
+    const card=node.querySelector('.map-hover-card');
+    node.querySelectorAll('[data-pin]').forEach(pin=>{
+      const p=items[+pin.dataset.pin];
+      const show=()=>{card.hidden=false;card.innerHTML='<strong>'+escapeMap(p.name)+'</strong>'+p.details;};
+      const hide=()=>{card.hidden=true;};
+      pin.addEventListener('mouseenter',show);
+      pin.addEventListener('mouseleave',hide);
+      pin.addEventListener('focus',show);
+      pin.addEventListener('blur',hide);
+      pin.addEventListener('click',()=>{show();if(typeof p.onClick==='function')p.onClick();});
+      pin.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();pin.dispatchEvent(new MouseEvent('click'));}});
+    });
+    node.querySelectorAll('[data-zoom]').forEach(b=>b.addEventListener('click',()=>{
+      const mode=b.dataset.zoom;
+      mapZoom[id]=mode==='reset'?1:Math.max(1,Math.min(2.5,(mapZoom[id]||1)*(mode==='plus'?1.25:1/1.25)));
+      renderMexicoImage(id,items,legend);
+    }));
+  }
+
   // ---------------- ETAPA 5 / GENERATION ----------------
   // Coordinates shown are plant coordinates when an official/reference source provided them;
   // otherwise a municipality reference point is used and is explicitly labelled as such.
@@ -610,9 +677,7 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
       $('#plantTechFilter').insertAdjacentHTML('beforeend',techs.map(x=>`<option>${x}</option>`).join(''));
       $('#plantStateFilter').insertAdjacentHTML('beforeend',states.map(x=>`<option>${x}</option>`).join(''));
       $('#plantTechFilter').addEventListener('change',renderPlants); $('#plantStateFilter').addEventListener('change',renderPlants);
-      maps.generation=L.map('generationMap',{scrollWheelZoom:false}).setView([23.5,-102],5);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(maps.generation);
-      genLayer=L.layerGroup().addTo(maps.generation); renderPlants();
+      renderPlants();
       lineChart('#cfeTotalChart',[{label:'2022',value:141343},{label:'2023',value:150462},{label:'2024',value:154059}],{unit:' GWh',digits:0});
       renderGenTech(2024);
       $$('.gen-year').forEach(b=>b.addEventListener('click',()=>{$$('.gen-year').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderGenTech(Number(b.dataset.genyear));}));
@@ -621,16 +686,24 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
       lineChart('#nationalCleanChart',[{label:'2022',value:26.68},{label:'2023',value:23.19},{label:'2024',value:23.40}],{unit:'%',digits:2,min:20,max:30});
       $('#runGenTest').addEventListener('click',()=>{const got=yoy(150462,154059),ok=Math.abs(got-2.39063684)<.00001;$('#genTestResult').className='test-result '+(ok?'pass':'fail');$('#genTestResult').textContent=`${ok?'✓ PASS':'✕ FAIL'} · resultado = ${nf(got,5)}% · esperado ≈ 2.39064%`;});
     }
-    setTimeout(()=>maps.generation.invalidateSize(),100);
+
   }
+
   function renderPlants(){
-    const t=$('#plantTechFilter').value,s=$('#plantStateFilter').value; genLayer.clearLayers();
+    const t=$('#plantTechFilter').value,s=$('#plantStateFilter').value;
     const arr=plants.filter(p=>(t==='all'||p.tech===t)&&(s==='all'||p.state===s));
-    arr.forEach(p=>{
-      const marker=L.circleMarker([p.lat,p.lng],{radius:8,color:'#fff',weight:2,fillColor:techColors[p.tech]||'#08783F',fillOpacity:.95});
-      marker.bindPopup(`<strong>${p.name}</strong><div class="popup-meta">${p.municipality}, ${p.state}<br>${p.tech} · <b>${nf(p.mw,2)} MW</b><br>${p.status}<br>${p.coord}</div><div class="popup-source">Fuente: ${p.source}</div>`); marker.addTo(genLayer);
-    });
-    $('#plantCount').textContent=`${arr.length} de ${plants.length} centrales/proyectos mostrados · ${new Set(arr.map(x=>x.state)).size} entidades/ámbitos · ${new Set(arr.map(x=>x.tech)).size} tecnologías.`;
+    const techIcons={'Hidroeléctrica':'H','Nucleoeléctrica':'N','Solar fotovoltaica':'S','Carboeléctrica':'C','Ciclo combinado':'G'};
+    const items=arr.map(p=>({
+      ...p,color:techColors[p.tech]||'#08783F',icon:techIcons[p.tech]||'E',
+      textColor:p.tech==='Solar fotovoltaica'?'#092F4B':'#fff',
+      details:'<div>'+escapeMap(p.municipality)+', '+escapeMap(p.state)+'</div>'+
+        '<div><b>'+escapeMap(p.tech)+'</b> · '+nf(p.mw,2)+' MW</div>'+
+        '<small>'+escapeMap(p.status)+' · '+escapeMap(p.coord)+'</small>'+
+        '<small><b>Fuente:</b> '+escapeMap(p.source)+'</small>'
+    }));
+    const counts=[...new Set(arr.map(p=>p.tech))].map(tech=>tech+': '+arr.filter(p=>p.tech===tech).length);
+    renderMexicoImage('generationMap',items,counts.length?counts:['Sin centrales con estos filtros']);
+    $('#plantCount').textContent=arr.length+' de '+plants.length+' centrales/proyectos identificados · '+new Set(arr.map(x=>x.state)).size+' entidades/ámbitos · '+new Set(arr.map(x=>x.tech)).size+' tecnologías. Pasa el cursor o toca cada marcador para consultar su ficha.';
   }
   function renderGenTech(y){
     const d=y===2023?{'Ciclo combinado':58234,'Vapor convencional':29336,'Carboeléctrica':15307,'Geotérmica':4321,'Nuclear':12386,'Hidroeléctrica':19568,'Eólica':86,'Solar':274}:{'Ciclo combinado':61490,'Vapor convencional':28135,'Carboeléctrica':14012,'Geotérmica':3692.5,'Nuclear':12306.6,'Hidroeléctrica':22354.2,'Eólica':74.7,'Solar':554.9};
@@ -648,16 +721,14 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
   function initTransmission(){
     if(!transmissionReady){
       transmissionReady=true;
-      maps.transmission=L.map('transmissionMap',{scrollWheelZoom:false}).setView([24.5,-106],5);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(maps.transmission);
-      systems.forEach((s,i)=>L.circleMarker([s.lat,s.lng],{radius:i?12:20,color:'#fff',weight:2,fillColor:i?'#FFAD18':'#08783F',fillOpacity:.88}).addTo(maps.transmission).bindPopup(`<strong>${s.name}</strong><div class="popup-meta">${s.status}<br>${s.detail}</div><div class="popup-source">Fuente: PRODESEN 2024–2038, Anexo 1, Fig. A1.1.</div>`));
+      renderMexicoImage('transmissionMap',systems.map((s,i)=>({...s,color:i?'#FFAD18':'#08783F',icon:i?'B':'S',textColor:i?'#092F4B':'#fff',details:'<div>'+escapeMap(s.status)+'</div><small>'+escapeMap(s.detail)+'</small><small>Fuente: PRODESEN 2024–2038, Anexo 1.</small>'})),['SIN · 1','Sistemas BC/BCS/Mulegé · 3']);
       lineChart('#txLengthChart',[{label:'2022',value:110449},{label:'2023',value:110558},{label:'2024',value:111138}],{unit:' km',digits:0});
       barChart('#txVoltageChart',[{name:'400 kV',value:26135},{name:'230 kV',value:29743},{name:'161 kV',value:531},{name:'138 kV',value:1620},{name:'115 kV',value:48725},{name:'85 kV',value:1757},{name:'69 kV',value:2335}],0);
       $('#runTxSim').addEventListener('click',runTxSim); ['txP','txV','txR','txPF'].forEach(id=>$('#'+id).addEventListener('input',runTxSim));
       $('#runTxTest').addEventListener('click',()=>{const r=txCalc(100,230,5,1);const ok=Math.abs(r.I-251.021856)<.001&&Math.abs(r.lossKW-945.179584)<.01;$('#txTestResult').className='test-result '+(ok?'pass':'fail');$('#txTestResult').textContent=`${ok?'✓ PASS':'✕ FAIL'} · I=${nf(r.I,5)} A · pérdidas=${nf(r.lossKW,5)} kW`;});
       runTxSim();
     }
-    setTimeout(()=>maps.transmission.invalidateSize(),100);
+
   }
   function txCalc(Pmw,Vkv,R,pf){const P=Pmw*1e6,V=Vkv*1e3;const I=P/(Math.sqrt(3)*V*pf);const lossW=3*I*I*R;return{I,lossKW:lossW/1e3,lossPct:lossW/P*100}};
   function runTxSim(){
@@ -692,9 +763,7 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
     if(!distributionReady){
       distributionReady=true;
       $('#divisionSelect').innerHTML=divisions.map((d,i)=>`<option value="${i}">${d.name}</option>`).join(''); $('#divisionSelect').addEventListener('change',renderDivision);
-      maps.distribution=L.map('distributionMap',{scrollWheelZoom:false}).setView([23.4,-102],5);
-      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap contributors'}).addTo(maps.distribution);
-      divisions.forEach((d,i)=>L.circleMarker([d.lat,d.lng],{radius:7,color:'#fff',weight:2,fillColor:'#08783F',fillOpacity:.9}).addTo(maps.distribution).bindPopup(`<strong>${d.name}</strong><div class="popup-meta">Punto administrativo de referencia: ${d.center}<br>Electrificación 2023: ${d.e2023}%<br>Meta/valor programado 2024 del PAM: ${d.e2024}%</div><div class="popup-source">Fuente: CFE, PAM RGD 2024–2038. El punto NO representa el polígono de la división.</div>`).on('click',()=>{$('#divisionSelect').value=i;renderDivision();}));
+      renderMexicoImage('distributionMap',divisions.map((d,i)=>({...d,color:'#08783F',icon:'D',details:'<div>Referencia administrativa: '+escapeMap(d.center)+'</div><small>Electrificación 2023: '+d.e2023+'% · Valor programado 2024: '+d.e2024+'%</small><small>Fuente: CFE PAM RGD 2024–2038. El marcador no delimita la división.</small>',onClick:()=>{$('#divisionSelect').value=i;renderDivision();}})),['16 divisiones CFE · ubicaciones administrativas']);
       renderDivision();
       lineChart('#distLossChart',[{label:'2022',value:11.05},{label:'2023',value:10.86},{label:'2024',value:10.69}],{unit:'%',digits:2,min:10,max:12});
       lineChart('#distSaidiChart',[{label:'2022',value:19.248},{label:'2023',value:17.788},{label:'2024',value:16.708}],{unit:'',digits:3,min:15,max:21});
@@ -703,7 +772,7 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
       $('#runTrTest').addEventListener('click',()=>{const r=trCalc(13.8,60,1000);const ok=Math.abs(r.Vs-230)<.001&&Math.abs(r.Ip-72.463768)<.001&&Math.abs(r.Is-4347.826087)<.001;$('#trTestResult').className='test-result '+(ok?'pass':'fail');$('#trTestResult').textContent=`${ok?'✓ PASS':'✕ FAIL'} · Vs=${nf(r.Vs,3)} V · Ip=${nf(r.Ip,5)} A · Is=${nf(r.Is,5)} A`;});
       runTrSim();
     }
-    setTimeout(()=>maps.distribution.invalidateSize(),100);
+
   }
   function renderDivision(){const d=divisions[+$('#divisionSelect').value||0];$('#divisionData').innerHTML=`<strong>${d.name}</strong> · referencia administrativa: ${d.center} · electrificación 2023: <b>${nf(d.e2023,2)}%</b> · 2024 PAM: <b>${nf(d.e2024,2)}%</b> · límites GIS: <b>Dato no disponible</b>`;}
   function trCalc(VpkV,ratio,SkVA){const Vp=VpkV*1000,S=SkVA*1000,Vs=Vp/ratio,Ip=S/Vp,Is=S/Vs;return{Vp,Vs,Ip,Is,S}};
