@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 1.4: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 1.5: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -155,6 +155,14 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .eco-chart-axes .eco-chart-foot{margin-top:8px}
 @media(max-width:600px){.eco-axis-title{font-size:.67rem}.eco-axis-x{margin-left:51px}}
 
+
+/* v1.5: títulos de eje mínimos y etiquetas de datos opacas sobre la cuadrícula. */
+.eco-chart-axes .eco-bar-value{z-index:3;background:#fff;border:1px solid #bcd7d1;border-radius:9px;padding:6px 9px;box-shadow:0 3px 11px rgba(9,47,75,.12);line-height:1.1;min-width:max-content}
+.eco-chart-axes .eco-bar-value small{margin-top:3px}
+.eco-chart-axes .eco-axis-y{text-transform:none}
+.eco-chart-axes .eco-axis-x{text-transform:none}
+@media(max-width:600px){.eco-chart-axes .eco-bar-value{padding:5px 6px;border-radius:7px;box-shadow:0 2px 7px rgba(9,47,75,.11)}}
+
 </style>
 </head>
 <body>
@@ -167,7 +175,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.4</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.5</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -408,7 +416,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 1.4 · Eco Solare</span>
+  <span>Versión 1.5 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -697,10 +705,10 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
     const gridLines=Array.from({length:9},(_,i)=>'<span class="eco-grid-line'+(i%2===0?' eco-grid-major':' eco-grid-half')+'" style="top:'+(i*12.5)+'%"></span>').join('');
     node.classList.add('eco-column-chart','eco-chart-axes');
     node.innerHTML='<div class="eco-chart-caption"><span>Comparativo anual</span><span class="eco-trend '+(isGood?'eco-trend-good':'')+'">'+trendText+(change!==null?' · '+(change>0?'+':'')+change.toFixed(2)+'%':'')+'</span></div>'+
-      '<div class="eco-axis-title eco-axis-y">Eje Y · '+unitLabel+'</div>'+ 
+      '<div class="eco-axis-title eco-axis-y">'+unitLabel+'</div>'+ 
       '<div class="eco-chart-layout"><div class="eco-y-axis" aria-label="Escala vertical de '+unitLabel+'">'+ticks+'</div>'+
       '<div class="eco-chart-plot"><div class="eco-grid-lines" aria-hidden="true">'+gridLines+'</div>'+bars+'</div></div>'+
-      '<div class="eco-axis-title eco-axis-x">Eje X · Año (2022–2024)</div>'+ 
+      '<div class="eco-axis-title eco-axis-x">Año</div>'+ 
       '<div class="eco-chart-foot"><span>Escala desde cero · guías en valores e intervalos medios</span><span>Último año destacado</span></div>';
   }
   function barChart(el, obj, digits=0){
