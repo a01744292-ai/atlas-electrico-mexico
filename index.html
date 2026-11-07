@@ -346,6 +346,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 #conversionFlow .flow-arrow{color:#f4d28b;text-shadow:0 2px 7px #001c2b}
 @media(max-width:760px){#conversionFlow.flow{min-height:210px;padding:18px 12px}}
 
+#dataStatusBtn{display:none!important}
 </style>
 </head>
 <body>
@@ -358,7 +359,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 3.0</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false" hidden aria-hidden="true" tabindex="-1"></button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -375,7 +376,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
   <div id="module0" class="module-section active-module">
   <section class="hero-grid">
     <article class="hero-card hero-main">
-      <span class="badge">Módulo 0 funcional</span>
+      
       <h2>Recursos energéticos</h2>
       <p>Explora la diferencia entre recurso primario, combustible, proceso de conversión, tecnología y electricidad producida. Los valores cuantitativos muestran su alcance y fuente.</p>
       <div class="hero-actions">
@@ -493,7 +494,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
   <section id="module1" class="module-section">
     <section class="stage-hero generation-hero">
-      <div><span class="badge">Etapa 5 · Módulo 1</span><h2>Generación eléctrica</h2><p>Compara la generación CFE y el contexto nacional, explora centrales verificadas y distingue capacidad (MW) de energía (GWh).</p></div>
+      <div><h2>Generación eléctrica</h2><p>Compara la generación CFE y el contexto nacional, explora centrales verificadas y distingue capacidad (MW) de energía (GWh).</p></div>
       <div class="stage-metrics"><div><strong>154,059</strong><span>GWh CFE · 2024</span></div><div><strong>61,720.1</strong><span>MW CFE + Gen V · 2024</span></div><div><strong>≥15</strong><span>centrales verificadas</span></div></div>
     </section>
     <p class="stage-source">Fuentes principales: CFE, <em>Informe Anual 2024</em>, pp. 20–27, 63, 273–294; SENER, <em>PRODESEN 2024–2038, Anexo 1</em>, cuadro de principales centrales.</p>
@@ -524,7 +525,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
   <section id="module2" class="module-section">
     <section class="stage-hero transmission-hero">
-      <div><span class="badge">Etapa 6 · Módulo 2</span><h2>Transmisión eléctrica</h2><p>Visualiza la estructura del SEN sin inventar rutas de líneas y experimenta cómo el nivel de tensión modifica la corriente y las pérdidas resistivas.</p></div>
+      <div><h2>Transmisión eléctrica</h2><p>Visualiza la estructura del SEN sin inventar rutas de líneas y experimenta cómo el nivel de tensión modifica la corriente y las pérdidas resistivas.</p></div>
       <div class="stage-metrics"><div><strong>111,138</strong><span>km · CFE Transmisión 2024</span></div><div><strong>2,317</strong><span>subestaciones</span></div><div><strong>168,981</strong><span>MVA transformación</span></div></div>
     </section>
     <p class="stage-source">Fuentes: CFE, <em>Informe Anual 2024</em>, p. 76; SENER, <em>PRODESEN 2024–2038, Anexo 1</em>, pp. 155–156.</p>
@@ -548,7 +549,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
   <section id="module3" class="module-section">
     <section class="stage-hero distribution-hero">
-      <div><span class="badge">Etapa 7 · Módulo 3</span><h2>Distribución eléctrica</h2><p>Explora las 16 divisiones oficiales de CFE, indicadores nacionales de red y un transformador ideal para estudiar el cambio de tensión y corriente.</p></div>
+      <div><h2>Distribución eléctrica</h2><p>Explora las 16 divisiones oficiales de CFE, indicadores nacionales de red y un transformador ideal para estudiar el cambio de tensión y corriente.</p></div>
       <div class="stage-metrics"><div><strong>49.1 M</strong><span>usuarios · 2024</span></div><div><strong>901 mil</strong><span>km de RGD</span></div><div><strong>16</strong><span>divisiones · 150 zonas</span></div></div>
     </section>
     <p class="stage-source">Fuentes: CFE, <em>Informe Anual 2024</em>, pp. 95–97 y 112; CFE, <em>PAM RGD 2024–2038</em>, sección III.</p>
@@ -574,7 +575,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
   <section id="module4" class="module-section">
     <section class="stage-hero findings-hero">
-      <div><span class="badge">Etapas 8–10 · Módulo 4</span><h2>¿Sabías que?</h2><p>Veinte hallazgos verificables del sistema eléctrico mexicano, una línea de tiempo de la reforma energética de 2013 y una bitácora visible de revisión por iteraciones de IA.</p></div>
+      <div><h2>¿Sabías que?</h2><p>Veinte hallazgos verificables del sistema eléctrico mexicano, una línea de tiempo de la reforma energética de 2013 y una bitácora visible de revisión por iteraciones de IA.</p></div>
       <div class="stage-metrics"><div><strong>20</strong><span>hallazgos verificados</span></div><div><strong>5 × 4</strong><span>por tema</span></div><div><strong>8/8</strong><span>controles finales</span></div></div>
     </section>
 
@@ -1231,7 +1232,7 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
   }
 
   // Update status wording now that Stages 5–7 are included.
-  const status=$('#dataStatusBtn'); if(status) status.textContent='● Versión final · Etapas 2–11';
+  const status=$('#dataStatusBtn'); if(status) status.textContent='';
 })();
 
 </script>
