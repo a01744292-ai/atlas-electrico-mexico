@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 1.8: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 1.9: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -197,6 +197,23 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .eco-chart-axes .eco-chart-caption .eco-trend{display:inline-flex;align-items:center;background:#e8f3f7;border:1px solid #c6dce7;border-radius:999px;padding:5px 9px;color:#125676;box-shadow:none;white-space:normal;text-align:center}
 .eco-chart-axes .eco-chart-caption .eco-trend-good{background:#e7f8ed;border-color:#bde4cd;color:#08783f}
 
+
+/* v1.9: navegación fija sin recortes y explicaciones integradas desplegables. */
+.topbar{position:relative;top:auto}
+.module-nav{position:sticky;top:0;z-index:60;overflow-x:auto;overflow-y:hidden;min-height:56px;align-items:center;box-shadow:0 6px 18px rgba(9,47,75,.13)}
+.module-btn{flex-shrink:0}
+.eco-concept-expand{display:block;min-width:0;padding:0;overflow:hidden;background:#fff}
+.eco-concept-expand summary{list-style:none;cursor:pointer;display:flex;flex-direction:column;gap:9px;padding:19px 20px;min-height:95px}
+.eco-concept-expand summary::-webkit-details-marker{display:none}
+.eco-concept-expand summary strong{font-weight:900;color:#092f4b}
+.eco-concept-action{color:#08783f;font-weight:800;font-size:.84rem}
+.eco-concept-action span{display:inline-block;transition:transform .2s}
+.eco-concept-expand[open] .eco-concept-action span{transform:rotate(180deg)}
+.eco-concept-expand[open]{border-color:#8acdb0;box-shadow:0 10px 25px #08783f16}
+.eco-concept-expand p{margin:0;padding:0 20px 20px;color:#385663;line-height:1.65;font-size:.94rem}
+.eco-concept-expand summary:focus-visible{outline:3px solid #ffad18;outline-offset:-4px}
+@media(max-width:1050px){.module-nav{top:0}.topbar{position:relative}}
+
 </style>
 </head>
 <body>
@@ -209,7 +226,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.8</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.9</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -349,7 +366,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
     </section>
     <p class="stage-source">Fuentes principales: CFE, <em>Informe Anual 2024</em>, pp. 20–27, 63, 273–294; SENER, <em>PRODESEN 2024–2038, Anexo 1</em>, cuadro de principales centrales.</p>
     <div class="section-head"><div><p class="eyebrow">Geografía de generación</p><h2>Centrales eléctricas seleccionadas</h2></div></div>
-    <div class="filter-row"><label>Tecnología <select id="plantTechFilter"><option value="all">Todas</option></select></label><label>Entidad <select id="plantStateFilter"><option value="all">Todas</option></select></label><span class="source-chip">Mapa vectorial recortado · puntos de referencia, salvo coordenadas documentadas</span></div>
+    <div class="filter-row"><label>Tecnología <select id="plantTechFilter"><option value="all">Todas</option></select></label><label>Entidad <select id="plantStateFilter"><option value="all">Todas</option></select></label></div>
     <div id="generationMap" class="atlas-map" aria-label="Mapa de centrales eléctricas"></div>
     <div id="plantCount" class="map-footnote"></div>
 
@@ -360,9 +377,9 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <article class="panel"><div class="panel-head"><h3>Contexto nacional</h3><span class="source-chip">SENER / CENACE · serie oficial</span></div><div id="nationalCleanChart" class="simple-chart"></div><p class="note">Serie de generación neta inyectada a la red: 26.68% (2022), 23.19% (2023) y 23.40% (2024). No es directamente comparable con el 31.2% de generación total SEN mostrado en Recursos, porque el alcance y la metodología son distintos.</p></article>
     </div>
     <div class="concept-grid">
-      <button class="concept-card info-btn-wide" data-tip="Ciclo termodinámico de vapor: aporte de calor → vapor → turbina → condensador → bomba. Es la base de centrales de vapor y del circuito secundario de una nuclear."><strong>Rankine</strong><span>Ver explicación</span></button>
-      <button class="concept-card info-btn-wide" data-tip="Vapor convencional: un combustible aporta calor a una caldera; el vapor mueve una turbina y el generador produce electricidad."><strong>Vapor convencional</strong><span>Ver explicación</span></button>
-      <button class="concept-card info-btn-wide" data-tip="Ciclo combinado: una turbina de gas genera electricidad y sus gases calientes producen vapor para una segunda turbina, aprovechando calor que de otro modo se perdería."><strong>Ciclo combinado</strong><span>Ver explicación</span></button>
+      <details class="concept-card eco-concept-expand"><summary><strong>Rankine</strong><span class="eco-concept-action">Ver explicación <span aria-hidden="true">⌄</span></span></summary><p>Ciclo termodinámico de vapor: aporte de calor → vapor → turbina → condensador → bomba. Es la base de centrales de vapor y del circuito secundario de una nuclear.</p></details>
+      <details class="concept-card eco-concept-expand"><summary><strong>Vapor convencional</strong><span class="eco-concept-action">Ver explicación <span aria-hidden="true">⌄</span></span></summary><p>Vapor convencional: un combustible aporta calor a una caldera; el vapor mueve una turbina y el generador produce electricidad.</p></details>
+      <details class="concept-card eco-concept-expand"><summary><strong>Ciclo combinado</strong><span class="eco-concept-action">Ver explicación <span aria-hidden="true">⌄</span></span></summary><p>Ciclo combinado: una turbina de gas genera electricidad y sus gases calientes producen vapor para una segunda turbina, aprovechando calor que de otro modo se perdería.</p></details>
     </div>
     <article class="verification-panel"><h3>Prueba de cálculo · crecimiento de generación CFE</h3><p><code>(154,059 − 150,462) / 150,462 × 100</code></p><div id="genTestResult" class="test-result"></div><button class="secondary" id="runGenTest">Comprobar</button></article>
   </section>
@@ -450,7 +467,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 1.8 · Eco Solare</span>
+  <span>Versión 1.9 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
