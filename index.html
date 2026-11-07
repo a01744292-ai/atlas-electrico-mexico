@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 1.3: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 1.4: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -141,6 +141,20 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .eco-chart-axes .eco-bar-year{height:33px}
 @media(max-width:600px){.eco-chart-axes .eco-chart-layout{grid-template-columns:51px minmax(0,1fr);gap:5px}.eco-chart-axes .eco-y-axis{height:159px;font-size:.61rem}.eco-chart-axes .eco-y-axis::before{right:-5px}.eco-chart-axes .eco-chart-plot{height:192px;gap:6px;padding:0 3px}.eco-chart-axes .eco-chart-plot::before{bottom:33px}.eco-chart-axes .eco-year-col{height:192px}.eco-chart-axes .eco-bar-track{height:159px}.eco-chart-axes .eco-bar-value{font-size:.72rem}.eco-chart-axes .eco-bar-value small{font-size:.56rem}}
 
+
+/* v1.4: únicamente línea principal y línea intermedia por intervalo; ejes con unidades. */
+.eco-chart-axes .eco-chart-plot::before{display:none!important}
+.eco-chart-axes .eco-grid-lines{position:absolute;top:0;left:0;right:0;bottom:33px;z-index:0;pointer-events:none}
+.eco-chart-axes .eco-grid-line{position:absolute;left:0;right:0;height:1px;background:#c2d8d5}
+.eco-chart-axes .eco-grid-major{background:#8fb9b3;height:1.5px}
+.eco-chart-axes .eco-grid-half{background:#d7e8e3;height:1px}
+.eco-chart-axes .eco-grid-line:last-child{background:#446b76;height:2px}
+.eco-axis-title{font-size:.73rem;font-weight:900;color:#315a67;letter-spacing:.015em}
+.eco-axis-y{margin:9px 0 6px 0}
+.eco-axis-x{text-align:center;margin:8px 0 0 65px}
+.eco-chart-axes .eco-chart-foot{margin-top:8px}
+@media(max-width:600px){.eco-axis-title{font-size:.67rem}.eco-axis-x{margin-left:51px}}
+
 </style>
 </head>
 <body>
@@ -153,7 +167,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.3</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.4</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -394,7 +408,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 1.3 · Eco Solare</span>
+  <span>Versión 1.4 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -666,7 +680,7 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
     const niceFactor=[1,2,2.5,5,10].find(v=>v>=rawStep)||10;
     const step=niceFactor*magnitude;
     const upper=step*4;
-    const unitLabel=unit.trim();
+    const unitLabel=unit.trim()||({distSaidiChart:'min/cliente',distSaifiChart:'interrupciones/cliente'}[node.id]||'');
     const fmt=v=>nf(v,digits);
     const axisFmt=v=>nf(v,Math.abs(step)<1?Math.max(digits,2):Math.abs(step)<10?Math.max(digits,1):0);
     const delta=vals.length>1?vals[vals.length-1]-vals[0]:0;
@@ -680,11 +694,14 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
         '<div class="eco-bar-year">'+d.label+'</div></div>';
     }).join('');
     const ticks=[4,3,2,1,0].map(n=>'<span>'+axisFmt(n*step)+'</span>').join('');
+    const gridLines=Array.from({length:9},(_,i)=>'<span class="eco-grid-line'+(i%2===0?' eco-grid-major':' eco-grid-half')+'" style="top:'+(i*12.5)+'%"></span>').join('');
     node.classList.add('eco-column-chart','eco-chart-axes');
     node.innerHTML='<div class="eco-chart-caption"><span>Comparativo anual</span><span class="eco-trend '+(isGood?'eco-trend-good':'')+'">'+trendText+(change!==null?' · '+(change>0?'+':'')+change.toFixed(2)+'%':'')+'</span></div>'+
+      '<div class="eco-axis-title eco-axis-y">Eje Y · '+unitLabel+'</div>'+ 
       '<div class="eco-chart-layout"><div class="eco-y-axis" aria-label="Escala vertical de '+unitLabel+'">'+ticks+'</div>'+
-      '<div class="eco-chart-plot">'+bars+'</div></div>'+
-      '<div class="eco-chart-foot"><span>Eje vertical: '+(unitLabel||'valor')+' · inicia en cero</span><span>Último año destacado</span></div>';
+      '<div class="eco-chart-plot"><div class="eco-grid-lines" aria-hidden="true">'+gridLines+'</div>'+bars+'</div></div>'+
+      '<div class="eco-axis-title eco-axis-x">Eje X · Año (2022–2024)</div>'+ 
+      '<div class="eco-chart-foot"><span>Escala desde cero · guías en valores e intervalos medios</span><span>Último año destacado</span></div>';
   }
   function barChart(el, obj, digits=0){
     const node=typeof el==='string'?$(el):el; if(!node) return;
