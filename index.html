@@ -106,6 +106,26 @@ body,button,input,select,textarea,table,.atlas-map,.map-hover-card,.map-legend,.
 body{font-weight:400}
 button,select,.map-legend span,.map-kicker{font-weight:700}
 
+
+/* Barras verticales Eco Solare: cifras legibles, escalas honestas, interacción elegante. */
+.eco-column-chart{width:100%;min-height:265px;padding:8px 4px 2px;font-family:"Lato","Segoe UI",sans-serif}
+.eco-chart-caption{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;font-size:.75rem;font-weight:800;letter-spacing:.01em;color:#607782;margin-bottom:10px}
+.eco-trend{display:inline-flex;align-items:center;background:#e8f3f7;border:1px solid #c6dce7;color:#125676;border-radius:999px;padding:5px 9px;font-weight:900;letter-spacing:0}
+.eco-trend-good{background:#e7f8ed;color:#08783f;border-color:#bde4cd}
+.eco-chart-plot{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:clamp(9px,2.3vw,26px);height:220px;padding:0 9px;border-bottom:2px solid #c9ddd6;background:repeating-linear-gradient(to top,transparent 0,transparent calc(25% - 1px),#dce9e5 calc(25% - 1px),#dce9e5 25%);border-radius:10px 10px 0 0}
+.eco-year-col{display:flex;flex-direction:column;align-items:stretch;justify-content:end;height:100%;min-width:0;outline:none;cursor:default}
+.eco-bar-value{min-height:37px;text-align:center;color:#092f4b;font-size:clamp(.82rem,1.6vw,1.08rem);font-weight:900;white-space:nowrap;font-variant-numeric:tabular-nums;display:flex;flex-direction:column;justify-content:end;line-height:1.1;padding-bottom:6px}
+.eco-bar-value span{font-size:.69rem;color:#607782;font-weight:700;margin-top:3px}
+.eco-bar-track{height:calc(100% - 70px);width:100%;display:flex;align-items:flex-end;justify-content:center}
+.eco-bar-fill{position:relative;width:min(72%,70px);border-radius:9px 9px 0 0;background:linear-gradient(180deg,#39a6a3,#087f91 58%,#07596d);box-shadow:inset 0 1px 0 #ffffff66,0 3px 12px #087f9130;transition:filter .2s,transform .2s;transform-origin:bottom}
+.eco-bar-latest{background:linear-gradient(180deg,#42c77c,#0b9b60 54%,#08783f);box-shadow:inset 0 1px 0 #ffffff77,0 3px 16px #08783f42}
+.eco-bar-glow{position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,#ffffff24,transparent 45%);pointer-events:none}
+.eco-year-col:hover .eco-bar-fill,.eco-year-col:focus-visible .eco-bar-fill{filter:brightness(1.17);transform:scaleX(1.08)}
+.eco-year-col:focus-visible .eco-bar-value{color:#08783f}
+.eco-bar-year{height:33px;display:flex;align-items:center;justify-content:center;font-size:.8rem;font-weight:900;color:#092f4b}
+.eco-chart-foot{display:flex;justify-content:space-between;gap:6px;color:#7c8e94;font-size:.66rem;margin-top:10px}
+@media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
+
 </style>
 </head>
 <body>
@@ -118,7 +138,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.1</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.2</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -359,7 +379,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 1.1 · Eco Solare</span>
+  <span>Versión 1.2 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -622,17 +642,28 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
 
   // ---------------- Shared charts ----------------
   function lineChart(el, data, {unit='',digits=1,min=null,max=null}={}){
-    const node=typeof el==='string'?$(el):el; if(!node) return;
-    const w=560,h=225,p=46;
-    const vals=data.map(d=>d.value); let lo=min??Math.min(...vals), hi=max??Math.max(...vals);
-    if(hi===lo){hi+=1;lo-=1}
-    const margin=(hi-lo)*.12; lo-=margin;hi+=margin;
-    const pts=data.map((d,i)=>({x:p+i*(w-2*p)/Math.max(1,data.length-1),y:h-p-(d.value-lo)/(hi-lo)*(h-2*p),...d}));
-    node.innerHTML=`<svg viewBox="0 0 ${w} ${h}" role="img">
-      <line x1="${p}" y1="${h-p}" x2="${w-p}" y2="${h-p}" stroke="#cbdad4"/>
-      <polyline fill="none" stroke="#087F91" stroke-width="4" points="${pts.map(x=>`${x.x},${x.y}`).join(' ')}"/>
-      ${pts.map(x=>`<circle cx="${x.x}" cy="${x.y}" r="6" fill="#08783F"/><text x="${x.x}" y="${x.y-12}" text-anchor="middle" font-size="12" font-weight="700" fill="#092F4B">${nf(x.value,digits)}${unit}</text><text x="${x.x}" y="${h-15}" text-anchor="middle" font-size="12" fill="#64727b">${x.label}</text>`).join('')}
-    </svg>`;
+    // Gráfica de barras con eje en cero y etiquetas explícitas, para evitar distorsiones.
+    const node=typeof el==='string'?$(el):el; if(!node||!data?.length)return;
+    const vals=data.map(d=>Number(d.value)||0);
+    const upper=Math.max(1,...vals)*1.14;
+    const unitLabel=unit.trim();
+    const fmt=v=>nf(v,digits);
+    const delta=vals.length>1?vals[vals.length-1]-vals[0]:0;
+    const change=vals[0]!==0?delta/Math.abs(vals[0])*100:null;
+    const trend=delta>0?'up':delta<0?'down':'flat';
+    const isGood=(node.id==='distLossChart'||node.id==='distSaidiChart'||node.id==='distSaifiChart')?delta<0:delta>0;
+    const trendText=delta===0?'Sin cambio':(delta>0?'+':'−')+fmt(Math.abs(delta))+(unitLabel?' '+unitLabel:'');
+    const bars=data.map((d,i)=>{
+      const v=vals[i],height=Math.max(0,v/upper*100),last=i===data.length-1;
+      return '<div class="eco-year-col" tabindex="0" role="img" aria-label="'+d.label+': '+fmt(v)+' '+unitLabel+'">'+
+        '<div class="eco-bar-value">'+fmt(v)+'<span>'+unitLabel+'</span></div>'+
+        '<div class="eco-bar-track"><div class="eco-bar-fill'+(last?' eco-bar-latest':'')+'" style="height:'+height.toFixed(3)+'%"><span class="eco-bar-glow"></span></div></div>'+
+        '<div class="eco-bar-year">'+d.label+'</div></div>';
+    }).join('');
+    node.classList.add('eco-column-chart');
+    node.innerHTML='<div class="eco-chart-caption"><span>Comparativo anual</span><span class="eco-trend '+(isGood?'eco-trend-good':'')+'">'+trendText+(change!==null?' · '+(change>0?'+':'')+change.toFixed(2)+'%':'')+'</span></div>'+
+      '<div class="eco-chart-plot">'+bars+'</div>'+
+      '<div class="eco-chart-foot"><span>Escala desde cero</span><span>Último año destacado</span></div>';
   }
   function barChart(el, obj, digits=0){
     const node=typeof el==='string'?$(el):el; if(!node) return;
