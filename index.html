@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 2.5: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 2.6: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -316,7 +316,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.5</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.6</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -563,7 +563,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 2.5 · Eco Solare</span>
+  <span>Versión 2.6 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -692,10 +692,10 @@ function startClassifierDrag(e){
   if(card.classList.contains('eco-card-answered'))return;
   const rect=card.getBoundingClientRect(),x=e.clientX,y=e.clientY;
   dragClassifier={id:Number(card.dataset.card),card,pointerId:e.pointerId,startX:x,startY:y,lastX:x,lastT:performance.now(),offsetX:rect.width/2,offsetY:9,moved:false,ghost:null,zone:null};
-  card.setPointerCapture(e.pointerId);
-  card.addEventListener('pointermove',moveClassifierDrag);
-  card.addEventListener('pointerup',endClassifierDrag);
-  card.addEventListener('pointercancel',cancelClassifierDrag);
+  // Escuchar a nivel de documento evita perder el arrastre al salir de la tarjeta.
+  document.addEventListener('pointermove',moveClassifierDrag);
+  document.addEventListener('pointerup',endClassifierDrag);
+  document.addEventListener('pointercancel',cancelClassifierDrag);
 }
 function moveClassifierDrag(e){
   const d=dragClassifier;if(!d||d.pointerId!==e.pointerId)return;
@@ -718,15 +718,15 @@ function moveClassifierDrag(e){
 function finishClassifierDrag(e,cancelled){
   const d=dragClassifier;if(!d||d.pointerId!==e.pointerId)return;
   dragClassifier=null;
-  d.card.removeEventListener('pointermove',moveClassifierDrag);
-  d.card.removeEventListener('pointerup',endClassifierDrag);
-  d.card.removeEventListener('pointercancel',cancelClassifierDrag);
+  document.removeEventListener('pointermove',moveClassifierDrag);
+  document.removeEventListener('pointerup',endClassifierDrag);
+  document.removeEventListener('pointercancel',cancelClassifierDrag);
   if(!d.moved)return;
   d.card.dataset.justDragged='1';setTimeout(()=>delete d.card.dataset.justDragged,80);
   d.card.classList.remove('eco-drag-origin');
   $$('.eco-drop-zone').forEach(z=>z.classList.remove('eco-drop-active'));
   if(!d.ghost)return;
-  const zone=!cancelled?document.elementFromPoint(e.clientX,e.clientY)?.closest('.eco-drop-zone'):null;
+  const zone=!cancelled?(document.elementFromPoint(e.clientX,e.clientY)?.closest('.eco-drop-zone')||d.zone):null;
   const target=zone?zone.getBoundingClientRect():d.card.getBoundingClientRect();
   d.ghost.style.transition='transform 300ms cubic-bezier(.22,1.2,.36,1),opacity 270ms';
   d.ghost.style.transform='translate3d('+(target.left+(target.width-d.ghost.offsetWidth)/2)+'px,'+(target.top+Math.min(12,target.height/4))+'px,0) scale(.78)';
@@ -867,7 +867,14 @@ $('#runTests').addEventListener('click',()=>{
   $('#testSummary').className='test-summary '+(pass===tests.length?'pass':'fail');
 });
 
-renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();renderTrend();renderTechnologyBars();renderComparePicker();renderCompareTable();renderAwareness();renderReflection();renderTests();
+const resourceInitTasks=[
+  ['Recursos',renderResourceColumns],['Clasificador',renderClassifier],
+  ['Selector de conversiones',renderFlowSelector],['Conversiones',renderFlow],
+  ['Matriz',renderTrend],['Tecnologías',renderTechnologyBars],
+  ['Selector del comparador',renderComparePicker],['Comparador',renderCompareTable],
+  ['Sabías que',renderAwareness],['Reflexión',renderReflection],['Pruebas',renderTests]
+];
+resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atlas: no se pudo inicializar '+name,error);}});
 
 </script>
 <script>
