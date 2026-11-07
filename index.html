@@ -385,6 +385,21 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .family-fossil{background:#d49b48}.family-nuclear{background:#526fa8}.family-renew{background:var(--green)}
 .family-year>small{font-size:.72rem;color:var(--muted);line-height:1.5}
 @media(max-width:850px){.family-comparison{grid-template-columns:1fr}.family-year{padding:14px}.family-empty{min-height:55px}}
+
+/* Auditoría de unidades, fórmulas y visualización de transmisión */
+.tx-chart-title{display:flex;justify-content:space-between;gap:12px;align-items:baseline;flex-wrap:wrap;margin:8px 0 12px;color:var(--navy)}
+.tx-chart-title span{color:var(--turquoise);font-size:.84rem;font-weight:800}
+.tx-chart-header,.tx-data-row{display:grid;grid-template-columns:68px minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:center}
+.tx-chart-header{font-size:.75rem;color:var(--muted);font-weight:800;border-bottom:1px solid var(--border);padding:0 3px 8px}
+.tx-data-row{padding:10px 4px;border-bottom:1px solid #e4ece7;font-size:.78rem}
+.tx-data-row>strong{color:var(--navy)}.tx-data-row.tx-current-voltage{background:#e9f7f0;border-radius:9px}
+.tx-measure{min-width:0}.tx-measure>span{display:block;margin-bottom:5px;font-variant-numeric:tabular-nums}
+.tx-track{display:block;overflow:hidden;height:10px;background:#e4eae7;border-radius:9px}
+.tx-fill{display:block;height:100%;border-radius:9px}
+.tx-fill-i{background:var(--turquoise)}.tx-fill-loss{background:var(--yellow)}
+.tx-chart-caption{font-size:.77rem;color:var(--muted);line-height:1.55;margin:12px 0 2px}
+.sim-warning{grid-column:1/-1;border-left:4px solid var(--yellow);background:#fff7e5;color:var(--navy);padding:11px;font-size:.82rem;border-radius:7px}
+@media(max-width:600px){.tx-chart-header,.tx-data-row{grid-template-columns:56px minmax(0,1fr) minmax(0,1fr);gap:6px;font-size:.71rem}.tx-chart-header{font-size:.66rem}}
 </style>
 </head>
 <body>
@@ -603,7 +618,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <article class="panel"><div class="panel-head"><h3>SAIFI</h3><span class="source-chip">int/cliente</span></div><div id="distSaifiChart" class="simple-chart"></div></article>
     </div>
     <article class="panel simulator-panel">
-      <div class="panel-head"><div><p class="eyebrow">Simulador físico simplificado</p><h3>Transformador ideal</h3></div><span class="source-chip">Vp/Vs=Np/Ns · VpIp=VsIs</span></div>
+      <div class="panel-head"><div><p class="eyebrow">Simulador físico simplificado</p><h3>Transformador monofásico ideal</h3></div><span class="source-chip">Vp/Vs=Np/Ns · VpIp=VsIs</span></div>
       <div class="sim-grid">
         <div class="sim-inputs"><label>Tensión primaria Vp (kV)<input id="trVp" type="number" min="0.001" step="0.1" value="13.8"></label><label>Relación de espiras Np/Ns<input id="trRatio" type="number" min="0.001" step="0.1" value="60"></label><label>Potencia aparente S (kVA)<input id="trS" type="number" min="0" step="1" value="1000"></label><button class="primary" id="runTrSim">Calcular</button></div>
         <div><div id="trOutputs" class="output-grid"></div><div id="trSimChart" class="simple-chart"></div></div>
@@ -1237,11 +1252,22 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
   }
   function txCalc(Pmw,Vkv,R,pf){const P=Pmw*1e6,V=Vkv*1e3;const I=P/(Math.sqrt(3)*V*pf);const lossW=3*I*I*R;return{I,lossKW:lossW/1e3,lossPct:lossW/P*100}};
   function runTxSim(){
-    const P=+$ ('#txP').value,V=+$ ('#txV').value,R=+$ ('#txR').value,pf=+$ ('#txPF').value;
-    if(!(P>0&&V>0&&R>=0&&pf>0&&pf<=1)){ $('#txOutputs').innerHTML='<div class="callout warning">Revisa los valores de entrada.</div>';return; }
-    const r=txCalc(P,V,R,pf);
-    $('#txOutputs').innerHTML=`<div class="output-card"><strong>${nf(r.I,3)} A</strong><span>Corriente de línea</span></div><div class="output-card"><strong>${nf(r.lossKW,3)} kW</strong><span>Pérdida resistiva total</span></div><div class="output-card"><strong>${nf(r.lossPct,4)}%</strong><span>Pérdidas / potencia enviada</span></div>`;
-    const volts=[69,115,138,161,230,400].map(v=>({v,...txCalc(P,v,R,pf)})); const maxLoss=Math.max(...volts.map(x=>x.lossKW)); $('#txSimChart').innerHTML=`<div class="sim-series-head"><span>V</span><span>Corriente</span><span>Pérdidas</span></div>${volts.map(x=>`<div class="sim-series-row"><strong>${x.v} kV</strong><span>${nf(x.I,2)} A</span><span>${nf(x.lossKW,2)} kW</span><i style="width:${x.lossKW/maxLoss*100}%"></i></div>`).join('')}`;
+    const P=Number($('#txP').value),V=Number($('#txV').value),R=Number($('#txR').value),pf=Number($('#txPF').value);
+    if(!(Number.isFinite(P)&&Number.isFinite(V)&&Number.isFinite(R)&&Number.isFinite(pf)&&P>0&&V>0&&R>=0&&pf>0&&pf<=1)){
+      $('#txOutputs').innerHTML='<div class="callout warning">Introduce P y V positivas, R no negativa y un factor de potencia entre 0 y 1.</div>';
+      $('#txSimChart').innerHTML='';return;
+    }
+    const result=txCalc(P,V,R,pf);
+    const inconsistent=result.lossPct>=100;
+    $('#txOutputs').innerHTML=`<div class="output-card"><strong>${nf(result.I,3)} A</strong><span>Corriente de línea</span></div><div class="output-card"><strong>${nf(result.lossKW,3)} kW</strong><span>Pérdida resistiva total</span></div><div class="output-card"><strong>${nf(result.lossPct,4)}%</strong><span>Pérdida resistiva / P activa</span></div>`+
+      (inconsistent?'<p class="sim-warning" role="alert">Atención: las pérdidas calculadas igualan o superan la potencia activa de entrada. Este punto no representa una transmisión viable; el modelo es solo una aproximación educativa.</p>':'');
+    const volts=[69,115,138,161,230,400].map(v=>({v,...txCalc(P,v,R,pf)}));
+    const maxI=Math.max(1,...volts.map(x=>x.I));
+    const maxLoss=Math.max(0,...volts.map(x=>x.lossKW));
+    $('#txSimChart').innerHTML='<div class="tx-chart-title"><strong>Una misma potencia, seis tensiones</strong><span>I ∝ 1/V · Pérdidas ∝ 1/V²</span></div>'+
+      '<div class="tx-chart-header"><span>Tensión</span><span>Corriente de línea (A)</span><span>Pérdidas resistivas (kW)</span></div>'+
+      volts.map(x=>'<div class="tx-data-row'+(x.v===V?' tx-current-voltage':'')+'"><strong>'+x.v+' kV</strong><div class="tx-measure"><span>'+nf(x.I,2)+' A</span><i class="tx-track"><b class="tx-fill tx-fill-i" style="width:'+(x.I/maxI*100).toFixed(3)+'%"></b></i></div><div class="tx-measure"><span>'+nf(x.lossKW,2)+' kW</span><i class="tx-track"><b class="tx-fill tx-fill-loss" style="width:'+(maxLoss>0?x.lossKW/maxLoss*100:0).toFixed(3)+'%"></b></i></div></div>').join('')+
+      '<p class="tx-chart-caption">Barras normalizadas por indicador, no entre indicadores. Una tensión mayor reduce la corriente y, a resistencia fija, las pérdidas I²R. Se supone potencia activa y factor de potencia constantes.</p>';
   }
 
   // ---------------- ETAPA 7 / DISTRIBUTION ----------------
@@ -1359,7 +1385,7 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
   ];
 
   const sources=[
-    {name:'CFE · Informe Anual 2024',detail:'Generación pp. 20–27 y 63; Transmisión pp. 76–77; Distribución pp. 95–97 y 112.',href:'https://www.cfe.mx/finanzas/reportes-financieros/Informe%20Anual%20Documentos/Informe%20Anual%202024.pdf'},
+    {name:'CFE · Informe Anual 2024',detail:'Generación pp. 20–27 y 63; Transmisión pp. 76–77; Distribución pp. 95–97 y 112.',href:'https://www.cfe.gob.mx/finanzas/reportes-financieros/Reportes%20Anuales%20Documentos/Informe%20Anual%202024.pdf'},
     {name:'SENER · PRODESEN 2023–2037, capítulo 4',detail:'Generación total SEN 2022 y participación limpia/fósil, p. 59.',href:'https://www.gob.mx/sener/documentos/programa-de-desarrollo-del-sistema-electrico-nacional-2023-2037'},
     {name:'DOF · Reforma constitucional energética 2013',detail:'Artículos 25, 27 y 28; transitorios tercero y décimo séptimo.',href:'https://sidof.segob.gob.mx/notas/docFuente/5327463'},
     {name:'DOF · Ley de la Industria Eléctrica 2014',detail:'Arts. 1–2, 107–108 y transitorios de reestructura/separación.',href:'https://www.diputados.gob.mx/LeyesBiblio/abro/lielec_2014/LIElec_orig_11ago14.pdf'},
