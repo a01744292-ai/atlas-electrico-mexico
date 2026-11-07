@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 2.2: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 2.3: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -268,6 +268,29 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:850px){.eco-classifier-columns{grid-template-columns:minmax(0,1fr) minmax(180px,.75fr);gap:12px}.eco-classifier-columns .eco-card-bank{grid-template-columns:1fr}.eco-classifier-columns .eco-drop-zone{min-height:98px}}
 @media(max-width:520px){.eco-classifier-columns{grid-template-columns:minmax(0,1fr) minmax(125px,.85fr);gap:9px}.eco-classifier-columns .eco-drop-zone{min-height:95px;padding:8px 4px}.eco-classifier-columns .eco-drop-zone strong{font-size:.81rem}.eco-classifier-columns .eco-drop-zone small{font-size:.64rem}.eco-classifier-columns .eco-drag-card{padding:9px;gap:6px}.eco-classifier-columns .eco-drag-copy strong{font-size:.82rem}.eco-classifier-columns .eco-drag-grip{font-size:1rem}.eco-classifier-column>h3{font-size:.84rem}}
 
+
+/* v2.3: el cursor sujeta la tarjeta desde su borde superior central;
+   la rotación ocurre alrededor de ese punto y las categorías siguen al usuario. */
+.eco-classifier-columns .eco-classifier-categories{
+  position:sticky;
+  top:72px;
+  align-self:start;
+  z-index:12;
+  max-height:calc(100vh - 84px);
+  overflow-y:auto;
+  overscroll-behavior:contain;
+  scrollbar-width:thin;
+}
+.eco-classifier-columns .eco-drop-zones{position:static;top:auto}
+.eco-drag-ghost{
+  transform-origin:50% 9px!important;
+  transition:rotate 215ms cubic-bezier(.19,.65,.25,1)!important;
+}
+@media(max-width:850px){
+  .eco-classifier-columns .eco-classifier-categories{top:68px;max-height:calc(100vh - 78px)}
+}
+@media(prefers-reduced-motion:reduce){.eco-drag-ghost{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -280,7 +303,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.2</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.3</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -527,7 +550,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 2.2 · Eco Solare</span>
+  <span>Versión 2.3 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -653,7 +676,7 @@ function startClassifierDrag(e){
   const card=e.currentTarget;
   if(card.classList.contains('eco-card-answered'))return;
   const rect=card.getBoundingClientRect(),x=e.clientX,y=e.clientY;
-  dragClassifier={id:Number(card.dataset.card),card,pointerId:e.pointerId,startX:x,startY:y,lastX:x,lastT:performance.now(),offsetX:x-rect.left,offsetY:y-rect.top,moved:false,ghost:null,zone:null};
+  dragClassifier={id:Number(card.dataset.card),card,pointerId:e.pointerId,startX:x,startY:y,lastX:x,lastT:performance.now(),offsetX:rect.width/2,offsetY:9,moved:false,ghost:null,zone:null};
   card.setPointerCapture(e.pointerId);
   card.addEventListener('pointermove',moveClassifierDrag);
   card.addEventListener('pointerup',endClassifierDrag);
