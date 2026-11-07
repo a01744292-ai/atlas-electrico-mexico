@@ -371,6 +371,20 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:1180px){.energy-guide-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:700px){.energy-guide-grid{grid-template-columns:1fr 1fr}}
 @media(max-width:500px){.energy-guide-grid{grid-template-columns:1fr}}
+
+/* Auditoría: comparaciones explícitas por alcance */
+.family-comparison{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:13px;margin:14px 0}
+.family-year{background:#f8fbfa;border:1px solid var(--border);border-radius:14px;padding:17px;min-width:0}
+.family-year h4{font-size:1.1rem;color:var(--navy);margin:0 0 15px}
+.family-year-missing{background:repeating-linear-gradient(135deg,#f7faf9 0,#f7faf9 13px,#edf3f1 14px,#edf3f1 15px)}
+.family-empty{display:grid;align-content:center;min-height:144px;gap:8px;color:var(--navy)}
+.family-empty p{font-size:.82rem;line-height:1.5;color:var(--muted);margin:0}
+.family-row{margin:12px 0}.family-row-head{display:flex;align-items:center;gap:6px;font-size:.8rem;min-width:0}.family-row-head span:last-child{margin-left:auto;white-space:nowrap;font-variant-numeric:tabular-nums}
+.family-dot{width:10px;height:10px;flex:none;border-radius:3px;display:inline-block}.family-track{height:11px;background:#e4ede9;border-radius:20px;overflow:hidden;margin-top:7px}
+.family-bar{display:block;height:100%;border-radius:20px}
+.family-fossil{background:#d49b48}.family-nuclear{background:#526fa8}.family-renew{background:var(--green)}
+.family-year>small{font-size:.72rem;color:var(--muted);line-height:1.5}
+@media(max-width:850px){.family-comparison{grid-template-columns:1fr}.family-year{padding:14px}.family-empty{min-height:55px}}
 </style>
 </head>
 <body>
@@ -481,7 +495,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <article class="panel">
         <div class="panel-head"><h3>Participación limpia CFE</h3><span class="source-chip">2022–2024</span></div>
         <div id="cleanTrend" class="trend-chart" aria-label="Tendencia de participación limpia CFE"></div>
-        <p class="note warning-text">2023 se conserva como porcentaje oficial reportado; existe una advertencia de denominador en la base.</p>
+        <p class="note warning-text">Advertencia de comparabilidad: 2022 y 2023 son indicadores reportados de distinto alcance y 2024 corresponde a una proporción de generación bruta. La diferencia numérica entre los años <strong>no constituye una serie homologada</strong>. En 2023 también existe una advertencia de denominador.</p>
       </article>
     </div>
     <article class="panel wide">
@@ -489,6 +503,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <div id="technologyBars" class="bars"></div>
       <p class="note">Valores en GWh. Fuente: Informe Anual CFE 2024, p. 26.</p>
     </article>
+    <article class="panel wide family-compare-panel"><div class="panel-head"><div><p class="eyebrow">Fósil · nuclear · renovable</p><h3>Comparación por familias · CFE 2022–2024</h3></div><span class="source-chip">GWh · escala común</span></div><div id="familyComparison" class="family-comparison" aria-label="Comparación anual de generación por familia energética"></div><p class="note warning-text">2022: no hay desglose CFE homogéneo por estas tres familias en la base del Atlas. En 2023 y 2024, las barras fósiles corresponden únicamente a ciclo combinado, vapor convencional y carboeléctrica; <strong>no representan toda la generación fósil</strong>. Las renovables suman hidráulica, geotérmica, eólica y solar. Comparación de subtotales identificados, no de la matriz total.</p><p class="note">Dato adicional verificado de 2024: CFE reportó <strong>115,076.4 GWh fósiles</strong> totales, 26,676.3 GWh renovables y 12,306.6 GWh nucleares (Informe Anual 2024, p. 27). Se muestra aparte para no mezclar el total fósil con el subtotal parcial de 2023.</p></article>
   </section>
 
   <section id="compare" class="view">
@@ -884,7 +899,7 @@ function renderTrend(){
   const format=v=>fmt(v,2);
   const axisFormat=v=>fmt(v,Number.isInteger(step)?0:1);
   const delta=vals[vals.length-1]-vals[0];
-  const trend=(delta===0?'Sin cambio':(delta>0?'+':'−')+format(Math.abs(delta))+' puntos porcentuales');
+  const trend=(delta===0?'Valores iguales':(delta>0?'+':'−')+format(Math.abs(delta))+' pp · diferencia no homologada');
   const bars=pts.map((p,i)=>{
     const height=Math.max(0,Math.min(100,vals[i]/upper*100));
     const latest=i===pts.length-1;
@@ -902,6 +917,18 @@ function renderTrend(){
     '<div class="eco-chart-plot"><div class="eco-grid-lines" aria-hidden="true">'+grid+'</div>'+bars+'</div></div>'+
     '<div class="eco-axis-title eco-axis-x">Año</div>'+
     '<div class="eco-chart-foot"><span>Escala desde cero · guías en valores e intervalos medios</span><span>Último año destacado</span></div>';
+}
+function renderFamilyComparison(){
+  const node=$('#familyComparison');if(!node)return;
+  const key=(d,n)=>Number(d[n]||0);
+  const records=['2023','2024'].map(year=>{
+    const d=DB.technology_series[year];
+    return {year,fossil:key(d,'Ciclo combinado')+key(d,'Vapor convencional')+key(d,'Carboeléctrica'),nuclear:key(d,'Nucleoeléctrica'),renew:key(d,'Geotermoeléctrica')+key(d,'Hidroeléctrica')+key(d,'Eoloeléctrica')+key(d,'Solar fotovoltaica')};
+  });
+  const labels=[['fossil','Fósil*'],['nuclear','Nuclear'],['renew','Renovable']];
+  const max=120000;
+  node.innerHTML='<div class="family-year family-year-missing"><h4>2022</h4><div class="family-empty"><strong>Sin desglose homogéneo</strong><p>Hay un indicador de participación limpia, pero no el detalle CFE para estas tres familias.</p></div></div>'+
+    records.map(d=>'<div class="family-year"><h4>'+d.year+'</h4>'+labels.map(([k,label])=>'<div class="family-row"><div class="family-row-head"><span class="family-dot family-'+k+'"></span><strong>'+label+'</strong><span>'+fmt(d[k],1)+' GWh</span></div><div class="family-track"><i class="family-bar family-'+k+'" style="width:'+Math.min(100,d[k]/max*100).toFixed(3)+'%"></i></div></div>').join('')+'<small>Subtotales de tecnologías identificadas</small></div>').join('');
 }
 function renderTechnologyBars(year='2023'){
   const data=DB.technology_series[year], max=Math.max(...Object.values(data));
@@ -989,6 +1016,7 @@ const resourceInitTasks=[
   ['Recursos',renderResourceColumns],['Clasificador',renderClassifier],
   ['Selector de conversiones',renderFlowSelector],['Conversiones',renderFlow],
   ['Matriz',renderTrend],['Tecnologías',renderTechnologyBars],
+  ['Comparación por familias',renderFamilyComparison],
   ['Selector del comparador',renderComparePicker],['Comparador',renderCompareTable],
   ['Sabías que',renderAwareness],['Reflexión',renderReflection],['Pruebas',renderTests]
 ];
@@ -1159,7 +1187,7 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
       renderGenTech(2024);
       $$('.gen-year').forEach(b=>b.addEventListener('click',()=>{$$('.gen-year').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderGenTech(Number(b.dataset.genyear));}));
       const ccShare=pct(61490,154059), vaporShare=pct(28135,154059), growth=yoy(150462,154059);
-      $('#generationKpis').innerHTML=`<div class="kpi-item"><strong>${nf(growth,2)}%</strong><span>Crecimiento bruto CFE 2023→2024</span></div><div class="kpi-item"><strong>${nf(ccShare,2)}%</strong><span>Participación ciclo combinado CFE 2024</span></div><div class="kpi-item"><strong>${nf(vaporShare,2)}%</strong><span>Participación vapor convencional CFE 2024</span></div><div class="kpi-item"><strong>25.30%</strong><span>Energías limpias CFE 2024 (tabla reportada 25.3%)</span></div><div class="kpi-item"><strong>74.70%</strong><span>Generación fósil CFE 2024, derivada como complemento de la tabla tecnológica exhaustiva</span></div>`;
+      $('#generationKpis').innerHTML=`<div class="kpi-item"><strong>${nf(growth,2)}%</strong><span>Crecimiento bruto CFE 2023→2024</span></div><div class="kpi-item"><strong>${nf(ccShare,2)}%</strong><span>Participación ciclo combinado CFE 2024</span></div><div class="kpi-item"><strong>${nf(vaporShare,2)}%</strong><span>Participación vapor convencional CFE 2024</span></div><div class="kpi-item"><strong>25.30%</strong><span>Energías limpias CFE 2024 (tabla reportada 25.3%)</span></div><div class="kpi-item"><strong>74.70%</strong><span>Generación fósil CFE 2024 · porcentaje reportado, Informe Anual 2024 p. 27</span></div>`;
       lineChart('#nationalCleanChart',[{label:'2022',value:26.68},{label:'2023',value:23.19},{label:'2024',value:23.40}],{unit:'%',digits:2,min:20,max:30});
       $('#runGenTest').addEventListener('click',()=>{const got=yoy(150462,154059),ok=Math.abs(got-2.39063684)<.00001;$('#genTestResult').className='test-result '+(ok?'pass':'fail');$('#genTestResult').textContent=`${ok?'✓ PASS':'✕ FAIL'} · resultado = ${nf(got,5)}% · esperado ≈ 2.39064%`;});
     }
