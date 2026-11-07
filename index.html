@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 1.5: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 1.6: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -163,6 +163,28 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .eco-chart-axes .eco-axis-x{text-transform:none}
 @media(max-width:600px){.eco-chart-axes .eco-bar-value{padding:5px 6px;border-radius:7px;box-shadow:0 2px 7px rgba(9,47,75,.11)}}
 
+
+/* v1.6: etiquetas de valores en banda exclusiva; nunca invaden las barras ni se superponen. */
+.eco-chart-axes .eco-chart-layout{align-items:start}
+.eco-chart-axes .eco-y-axis{margin-top:58px}
+.eco-chart-axes .eco-y-axis::before{top:0;bottom:0}
+.eco-chart-axes .eco-chart-plot{height:278px;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(5px,1.5vw,15px)}
+.eco-chart-axes .eco-grid-lines{top:58px;bottom:33px}
+.eco-chart-axes .eco-year-col{height:278px;min-width:0;display:flex;flex-direction:column;justify-content:flex-end;align-items:stretch}
+.eco-chart-axes .eco-year-col>.eco-bar-value{position:static;transform:none;min-width:0;width:100%;height:58px;min-height:58px;box-sizing:border-box;display:flex;align-items:center;justify-content:center;flex-direction:column;padding:5px 2px;border-radius:8px;background:#fff;border:1px solid #bcd7d1;box-shadow:0 3px 10px #092f4b15;white-space:nowrap;font-size:clamp(.72rem,1.1vw,.98rem);line-height:1.15;z-index:3}
+.eco-chart-axes .eco-year-col>.eco-bar-value small{display:block;max-width:100%;font-size:clamp(.55rem,.8vw,.68rem);margin-top:4px;letter-spacing:-.02em;overflow:hidden;text-overflow:ellipsis}
+.eco-chart-axes .eco-bar-track{height:187px;flex-shrink:0}
+.eco-chart-axes .eco-bar-year{height:33px;flex-shrink:0}
+@media(max-width:600px){
+.eco-chart-axes .eco-y-axis{margin-top:58px}
+.eco-chart-axes .eco-chart-plot{height:250px;gap:4px}
+.eco-chart-axes .eco-grid-lines{top:58px;bottom:33px}
+.eco-chart-axes .eco-year-col{height:250px}
+.eco-chart-axes .eco-bar-track{height:159px}
+.eco-chart-axes .eco-year-col>.eco-bar-value{font-size:.73rem;padding:5px 1px}
+.eco-chart-axes .eco-year-col>.eco-bar-value small{font-size:.55rem}
+}
+
 </style>
 </head>
 <body>
@@ -175,7 +197,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.5</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.6</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -416,7 +438,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 1.5 · Eco Solare</span>
+  <span>Versión 1.6 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -698,7 +720,8 @@ renderResourceColumns();renderClassifier();renderFlowSelector();renderFlow();ren
     const bars=data.map((d,i)=>{
       const v=vals[i],height=Math.max(0,Math.min(100,v/upper*100)),last=i===data.length-1;
       return '<div class="eco-year-col" tabindex="0" role="img" aria-label="'+d.label+': '+fmt(v)+' '+unitLabel+'">'+
-        '<div class="eco-bar-track"><div class="eco-bar-fill'+(last?' eco-bar-latest':'')+'" style="height:'+height.toFixed(3)+'%"><span class="eco-bar-glow"></span><span class="eco-bar-value">'+fmt(v)+(unitLabel?'<small>'+unitLabel+'</small>':'')+'</span></div></div>'+
+        '<div class="eco-bar-value">'+fmt(v)+(unitLabel?'<small>'+({distSaifiChart:'int/cliente'}[node.id]||unitLabel)+'</small>':'')+'</div>'+ 
+        '<div class="eco-bar-track"><div class="eco-bar-fill'+(last?' eco-bar-latest':'')+'" style="height:'+height.toFixed(3)+'%"><span class="eco-bar-glow"></span></div></div>'+
         '<div class="eco-bar-year">'+d.label+'</div></div>';
     }).join('');
     const ticks=[4,3,2,1,0].map(n=>'<span>'+axisFmt(n*step)+'</span>').join('');
