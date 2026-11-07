@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 2.0: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 2.1: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -225,6 +225,33 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .eco-concept-grid .eco-concept-expand[open] .eco-concept-chevron{transform:rotate(180deg)}
 @media(max-width:700px){.eco-concept-grid{grid-template-columns:1fr}.eco-concept-grid .eco-concept-expand summary{min-height:75px}}
 
+
+/* v2.1: clasificador de arrastrar y soltar con inclinación dinámica y aterrizaje. */
+#classifierGrid{display:block;margin:18px 0}
+.eco-classifier-intro{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:14px;color:#092f4b}
+.eco-classifier-intro strong{font-size:1.08rem}.eco-classifier-intro span{font-size:.8rem;color:#64727b}
+.eco-drop-zones{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-bottom:20px}
+.eco-drop-zone{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;min-height:125px;padding:14px 8px;border:2px dashed #9ac5b6;border-radius:17px;background:linear-gradient(155deg,#f3fbf7,#e7f5f1);color:#0a4d43;cursor:pointer;transition:background .16s,border-color .16s,transform .16s,box-shadow .16s;font-family:"Lato",sans-serif}
+.eco-drop-zone strong{font-size:1rem}.eco-drop-zone small{font-size:.73rem;color:#527b73}
+.eco-drop-icon{font-size:1.6rem;line-height:1;color:#08783f}
+.eco-drop-zone:hover,.eco-drop-zone:focus-visible,.eco-drop-active{border-color:#079b66;background:#d5f8e7;transform:translateY(-3px);box-shadow:0 8px 20px #08783f20;outline:none}
+.eco-card-bank{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:11px;align-items:start}
+.eco-drag-card{display:flex;align-items:center;gap:12px;min-height:92px;padding:13px;border:1px solid #cadfd7;border-radius:15px;background:#fff;box-shadow:0 5px 15px #092f4b0e;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none;transition:box-shadow .15s,border-color .15s,background .15s;position:relative;min-width:0}
+.eco-drag-card:active{cursor:grabbing}
+.eco-drag-card:focus-visible,.eco-card-selected{outline:2px solid #0eab73;outline-offset:1px}
+.eco-drag-grip{font-size:1.5rem;color:#7da99a;flex-shrink:0}
+.eco-drag-copy{min-width:0;flex:1}.eco-drag-copy strong{display:block;font-size:.93rem;color:#092f4b}.eco-drag-copy small{display:block;font-size:.72rem;color:#6a8187;margin-top:3px}
+.eco-drag-hand{color:#0b926b;font-weight:900}
+.eco-drag-result{font-size:.78rem;line-height:1.35;margin-top:7px;color:#41666a}
+.eco-card-correct{border-color:#86d3ab;background:#f2fbf5;cursor:default;touch-action:auto}
+.eco-card-wrong{border-color:#edb4a7;background:#fff8f5}
+.eco-card-answered .eco-drag-hand{display:none}
+.eco-drag-origin{opacity:.28}
+.eco-drag-ghost{position:fixed!important;left:0;top:0;z-index:9999;pointer-events:none;will-change:transform;transform-origin:50% 60%;box-shadow:0 24px 45px #092f4b48!important;border-color:#0c9a72!important;background:#fff!important}
+@media(max-width:850px){.eco-card-bank{grid-template-columns:repeat(2,minmax(0,1fr))}.eco-drop-zones{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:500px){.eco-card-bank{grid-template-columns:1fr}.eco-drop-zone{min-height:102px}.eco-drag-card{min-height:75px}}
+@media(prefers-reduced-motion:reduce){.eco-drop-zone,.eco-drag-card,.eco-drag-ghost{transition:none!important}}
+
 </style>
 </head>
 <body>
@@ -237,7 +264,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.0</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.1</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -304,7 +331,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <div><p class="eyebrow">Actividad interactiva</p><h2>Clasificador de recursos y tecnologías</h2></div>
       <div class="score" id="scoreBox">0 aciertos · 0 errores</div>
     </div>
-    <p class="section-copy">Selecciona la categoría que mejor corresponda. Las tecnologías multcombustible no se fuerzan a una categoría: el sistema explica por qué su clasificación depende de la fuente utilizada.</p>
+    <p class="section-copy">Arrastra cada tarjeta y suéltala sobre la categoría correspondiente. Las tecnologías que dependen del combustible tienen su propia categoría. También puedes seleccionar una tarjeta y después una categoría con el teclado o mediante clic.</p>
     <div class="classifier-grid" id="classifierGrid"></div>
     <button class="secondary" id="resetClassifier">Reiniciar actividad</button>
   </section>
@@ -484,7 +511,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 2.0 · Eco Solare</span>
+  <span>Versión 2.1 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -560,32 +587,104 @@ const classifierCards=[
   ['Combustión interna','Tecnología multi-combustible','Contextual','La familia depende del combustible empleado; no debe forzarse una categoría por el nombre de la tecnología.']
 ].map((x,i)=>({id:i,name:x[0],type:x[1],answer:x[2],explanation:x[3]}));
 let classScore={ok:0,bad:0,answered:new Set()};
-function renderClassifier(){
-  $('#classifierGrid').innerHTML=classifierCards.map(c=>`
-   <article class="classifier-card" data-card="${c.id}">
-    <h3>${c.name}</h3><span class="type">${c.type}</span>
-    <div class="choice-row">${['Fósil','Nuclear','Renovable'].map(k=>`<button class="choice" data-card="${c.id}" data-choice="${k}">${k}</button>`).join('')}</div>
-    <div class="feedback" id="fb-${c.id}"></div>
-   </article>`).join('');
-  $$('.choice').forEach(btn=>btn.addEventListener('click',()=>gradeCard(btn)));
-}
-function gradeCard(btn){
-  const c=classifierCards.find(x=>x.id===Number(btn.dataset.card));
-  const root=btn.closest('.classifier-card');
-  $$('.choice',root).forEach(x=>x.classList.remove('correct','wrong','context'));
-  if(c.answer==='Contextual'){
-    btn.classList.add('context');
-    $(`#fb-${c.id}`).textContent=`Tecnología, no recurso: ${c.explanation}`;
-  }else{
-    const correct=btn.dataset.choice===c.answer;
-    btn.classList.add(correct?'correct':'wrong');
-    if(!classScore.answered.has(c.id)){
-      classScore.answered.add(c.id); correct?classScore.ok++:classScore.bad++;
-    }
-    $(`#fb-${c.id}`).textContent=(correct?'Correcto. ':'Revisa la diferencia entre recurso y tecnología. ')+c.explanation;
-    $('#scoreBox').textContent=`${classScore.ok} aciertos · ${classScore.bad} errores`;
+let selectedClassifierId=null,dragClassifier=null;
+const classifierCategories=['Fósil','Nuclear','Renovable','Contextual'];
+function classifierFeedback(c,choice){
+  const correct=c.answer===choice;
+  if(!classScore.answered.has(c.id)){
+    classScore.answered.add(c.id);
+    correct?classScore.ok++:classScore.bad++;
   }
+  $('#scoreBox').textContent=`${classScore.ok} aciertos · ${classScore.bad} errores`;
+  const card=document.querySelector('.eco-drag-card[data-card="'+c.id+'"]');
+  if(card){
+    card.classList.toggle('eco-card-correct',correct);
+    card.classList.toggle('eco-card-wrong',!correct);
+    card.querySelector('.eco-drag-result').textContent=(correct?'✓ Correcto. ':'✕ Inténtalo de nuevo. ')+c.explanation;
+    card.setAttribute('aria-label',c.name+'. '+(correct?'Correcto. ':'Incorrecto. ')+c.explanation);
+    if(correct){card.classList.add('eco-card-answered');card.setAttribute('aria-disabled','true');card.tabIndex=-1;}
+  }
+  $$('.eco-drop-zone').forEach(z=>z.classList.remove('eco-drop-active'));
+  if(selectedClassifierId===c.id)selectedClassifierId=null;
+  $$('.eco-drag-card').forEach(z=>z.classList.remove('eco-card-selected'));
 }
+function classifyDrop(id,choice){
+  const c=classifierCards.find(x=>x.id===Number(id));
+  if(!c||!classifierCategories.includes(choice)||document.querySelector('.eco-drag-card[data-card="'+id+'"]')?.classList.contains('eco-card-answered'))return;
+  classifierFeedback(c,choice);
+}
+function renderClassifier(){
+  selectedClassifierId=null;
+  $('#classifierGrid').innerHTML='<div class="eco-classifier-intro"><strong>Arrastra y clasifica</strong><span>19 tarjetas · 4 categorías</span></div>'+
+  '<div class="eco-drop-zones">'+classifierCategories.map(k=>'<button type="button" class="eco-drop-zone" data-category="'+k+'" aria-label="Soltar en '+k+'"><span class="eco-drop-icon">'+({Fósil:'◆',Nuclear:'◉',Renovable:'✦',Contextual:'◇'}[k])+'</span><strong>'+k+'</strong><small>'+(k==='Contextual'?'Depende del combustible':'Suelta aquí')+'</small></button>').join('')+'</div>'+
+  '<div class="eco-card-bank">'+classifierCards.map(c=>'<div class="eco-drag-card" tabindex="0" role="button" data-card="'+c.id+'" aria-label="Seleccionar '+c.name+' para clasificar"><div class="eco-drag-grip" aria-hidden="true">⠿</div><div class="eco-drag-copy"><strong>'+c.name+'</strong><small>'+c.type+'</small><div class="eco-drag-result" aria-live="polite"></div></div><span class="eco-drag-hand" aria-hidden="true">↗</span></div>').join('')+'</div>';
+  $$('.eco-drop-zone').forEach(z=>z.addEventListener('click',()=>{if(selectedClassifierId!==null)classifyDrop(selectedClassifierId,z.dataset.category);}));
+  $$('.eco-drag-card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      if(card.classList.contains('eco-card-answered')||card.dataset.justDragged==='1')return;
+      selectedClassifierId=Number(card.dataset.card);
+      $$('.eco-drag-card').forEach(x=>x.classList.toggle('eco-card-selected',x===card));
+    });
+    card.addEventListener('keydown',e=>{
+      if(e.key==='Enter'||e.key===' '){e.preventDefault();card.click();if(selectedClassifierId!==null)$$('.eco-drop-zone')[0]?.focus();}
+    });
+    card.addEventListener('pointerdown',startClassifierDrag);
+  });
+}
+function startClassifierDrag(e){
+  if(e.button!==0&&e.pointerType==='mouse')return;
+  const card=e.currentTarget;
+  if(card.classList.contains('eco-card-answered'))return;
+  const rect=card.getBoundingClientRect(),x=e.clientX,y=e.clientY;
+  dragClassifier={id:Number(card.dataset.card),card,pointerId:e.pointerId,startX:x,startY:y,lastX:x,lastT:performance.now(),offsetX:x-rect.left,offsetY:y-rect.top,moved:false,ghost:null,zone:null};
+  card.setPointerCapture(e.pointerId);
+  card.addEventListener('pointermove',moveClassifierDrag);
+  card.addEventListener('pointerup',endClassifierDrag);
+  card.addEventListener('pointercancel',cancelClassifierDrag);
+}
+function moveClassifierDrag(e){
+  const d=dragClassifier;if(!d||d.pointerId!==e.pointerId)return;
+  const dx=e.clientX-d.startX,dy=e.clientY-d.startY;
+  if(!d.moved&&Math.hypot(dx,dy)<7)return;
+  if(!d.moved){
+    d.moved=true;
+    const g=d.card.cloneNode(true);
+    g.classList.add('eco-drag-ghost');g.classList.remove('eco-card-selected');
+    g.style.width=d.card.getBoundingClientRect().width+'px';
+    document.body.appendChild(g);d.ghost=g;d.card.classList.add('eco-drag-origin');
+  }
+  e.preventDefault();
+  const now=performance.now(),dt=Math.max(8,now-d.lastT);
+  const vx=(e.clientX-d.lastX)/dt;
+  const tilt=Math.max(-16,Math.min(16,vx*85));
+  d.lastX=e.clientX;d.lastT=now;
+  d.ghost.style.transform='translate3d('+(e.clientX-d.offsetX)+'px,'+(e.clientY-d.offsetY)+'px,0) rotate('+tilt.toFixed(1)+'deg) scale(1.035)';
+  d.ghost.style.setProperty('--eco-tilt',tilt.toFixed(1)+'deg');
+  const zone=document.elementFromPoint(e.clientX,e.clientY)?.closest('.eco-drop-zone');
+  d.zone=zone||null;
+  $$('.eco-drop-zone').forEach(z=>z.classList.toggle('eco-drop-active',z===zone));
+}
+function finishClassifierDrag(e,cancelled){
+  const d=dragClassifier;if(!d||d.pointerId!==e.pointerId)return;
+  dragClassifier=null;
+  d.card.removeEventListener('pointermove',moveClassifierDrag);
+  d.card.removeEventListener('pointerup',endClassifierDrag);
+  d.card.removeEventListener('pointercancel',cancelClassifierDrag);
+  if(!d.moved)return;
+  d.card.dataset.justDragged='1';setTimeout(()=>delete d.card.dataset.justDragged,80);
+  d.card.classList.remove('eco-drag-origin');
+  $$('.eco-drop-zone').forEach(z=>z.classList.remove('eco-drop-active'));
+  if(!d.ghost)return;
+  const zone=!cancelled?document.elementFromPoint(e.clientX,e.clientY)?.closest('.eco-drop-zone'):null;
+  const target=zone?zone.getBoundingClientRect():d.card.getBoundingClientRect();
+  d.ghost.style.transition='transform 280ms cubic-bezier(.22,1.4,.36,1),opacity 260ms';
+  d.ghost.style.transform='translate3d('+(target.left+(target.width-d.ghost.offsetWidth)/2)+'px,'+(target.top+Math.min(12,target.height/4))+'px,0) rotate(0deg) scale(.78)';
+  d.ghost.style.opacity='0';
+  setTimeout(()=>d.ghost.remove(),300);
+  if(zone)classifyDrop(d.id,zone.dataset.category);
+}
+function endClassifierDrag(e){finishClassifierDrag(e,false)}
+function cancelClassifierDrag(e){finishClassifierDrag(e,true)}
 $('#resetClassifier').addEventListener('click',()=>{classScore={ok:0,bad:0,answered:new Set()};$('#scoreBox').textContent='0 aciertos · 0 errores';renderClassifier();});
 
 // ---------- Conversiones ----------
