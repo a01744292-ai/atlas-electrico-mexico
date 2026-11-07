@@ -815,7 +815,7 @@ const flowDescriptions={
 let activeFlowStep=0;
 function renderFlowSelector(){
   $('#conversionSelector').innerHTML=Object.keys(flows).map(n=>`<button class="selector ${n===activeFlow?'active':''}" data-flow="${n}"><span class="eco-flow-icon">${flowVisuals[n].icon}</span>${n}</button>`).join('');
-  $('.selector').forEach(b=>b.addEventListener('click',()=>{activeFlow=b.dataset.flow;activeFlowStep=0;renderFlowSelector();renderFlow();}));
+  $$('.selector').forEach(b=>b.addEventListener('click',()=>{activeFlow=b.dataset.flow;activeFlowStep=0;renderFlowSelector();renderFlow();}));
 }
 function renderFlow(){
   const arr=flows[activeFlow], visual=flowVisuals[activeFlow];
@@ -825,7 +825,7 @@ function renderFlow(){
   flow.innerHTML=arr.map((step,i)=>`${i?'<span class="flow-arrow">→</span>':''}<button class="flow-step ${i===activeFlowStep?'eco-flow-current':''}" data-step="${i}" aria-pressed="${i===activeFlowStep}">${step[0]}</button>`).join('');
   const current=arr[activeFlowStep];
   $('#conversionDetail').innerHTML=`<div class="eco-flow-detail-heading"><span>${visual.icon}</span><strong>${activeFlow}</strong><span class="eco-flow-count">Etapa ${activeFlowStep+1} de ${arr.length}</span></div><p>${flowDescriptions[activeFlow]}</p><div class="eco-flow-stage"><strong>${current[0]}</strong><p>${current[1]}</p></div><div class="eco-flow-controls"><button type="button" class="secondary" id="flowPrev" ${activeFlowStep===0?'disabled':''}>← Anterior</button><button type="button" class="secondary" id="flowNext" ${activeFlowStep===arr.length-1?'disabled':''}>Siguiente →</button></div>`;
-  $('.flow-step').forEach(b=>b.addEventListener('click',()=>{activeFlowStep=Number(b.dataset.step);renderFlow();}));
+  $$('.flow-step').forEach(b=>b.addEventListener('click',()=>{activeFlowStep=Number(b.dataset.step);renderFlow();}));
   $('#flowPrev').addEventListener('click',()=>{if(activeFlowStep>0){activeFlowStep--;renderFlow();}});
   $('#flowNext').addEventListener('click',()=>{if(activeFlowStep<arr.length-1){activeFlowStep++;renderFlow();}});
 }
