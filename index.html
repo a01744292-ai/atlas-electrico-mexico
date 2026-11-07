@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 2.3: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 2.4: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -291,6 +291,19 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 }
 @media(prefers-reduced-motion:reduce){.eco-drag-ghost{transition:none!important}}
 
+
+/* v2.4: cada grupo crece con las tarjetas que recibe; sin inclinación. */
+.eco-classifier-columns .eco-drop-zone{display:block;min-height:105px;height:auto;text-align:center;padding:13px 10px;transform:none}
+.eco-drop-heading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;pointer-events:none}
+.eco-drop-items{display:flex;flex-direction:column;gap:9px;margin-top:10px}
+.eco-drop-items:empty{display:none}
+.eco-drop-items .eco-drag-card{width:100%;box-sizing:border-box;min-height:70px;padding:10px;text-align:left;cursor:default;touch-action:auto}
+.eco-drop-items .eco-drag-card:not(.eco-card-answered){cursor:grab;touch-action:none}
+.eco-drop-items .eco-drag-card .eco-drag-hand{display:none}
+.eco-classifier-columns .eco-classifier-categories{max-height:calc(100vh - 84px);overflow-y:auto}
+.eco-drag-ghost{rotate:0deg!important;transform-origin:50% 9px}
+@media(max-width:520px){.eco-classifier-columns .eco-drop-zone{padding:9px 5px}.eco-drop-items .eco-drag-card{padding:7px 4px;gap:5px}.eco-drop-items .eco-drag-grip{display:none}}
+
 </style>
 </head>
 <body>
@@ -303,7 +316,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.3</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.4</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -550,7 +563,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 2.3 · Eco Solare</span>
+  <span>Versión 2.4 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -642,6 +655,8 @@ function classifierFeedback(c,choice){
     card.querySelector('.eco-drag-result').textContent=(correct?'✓ Correcto. ':'✕ Inténtalo de nuevo. ')+c.explanation;
     card.setAttribute('aria-label',c.name+'. '+(correct?'Correcto. ':'Incorrecto. ')+c.explanation);
     if(correct){card.classList.add('eco-card-answered');card.setAttribute('aria-disabled','true');card.tabIndex=-1;}
+    const destination=document.querySelector('.eco-drop-zone[data-category="'+choice+'"] .eco-drop-items');
+    if(destination){destination.appendChild(card);card.classList.add('eco-card-placed');}
   }
   $$('.eco-drop-zone').forEach(z=>z.classList.remove('eco-drop-active'));
   if(selectedClassifierId===c.id)selectedClassifierId=null;
@@ -657,8 +672,8 @@ function renderClassifier(){
   $('#classifierGrid').innerHTML='<div class="eco-classifier-intro"><strong>Arrastra y clasifica</strong><span>19 tarjetas · 4 categorías</span></div>'+
   '<div class="eco-classifier-columns">'+
   '<section class="eco-classifier-column eco-classifier-resources"><h3>Tipos de energía y tecnologías</h3><div class="eco-card-bank">'+classifierCards.map(c=>'<div class="eco-drag-card" tabindex="0" role="button" data-card="'+c.id+'" aria-label="Seleccionar '+c.name+' para clasificar"><div class="eco-drag-grip" aria-hidden="true">⠿</div><div class="eco-drag-copy"><strong>'+c.name+'</strong><small>'+c.type+'</small><div class="eco-drag-result" aria-live="polite"></div></div><span class="eco-drag-hand" aria-hidden="true">↗</span></div>').join('')+'</div></section>'+
-  '<section class="eco-classifier-column eco-classifier-categories"><h3>Grupo al que pertenecen</h3><div class="eco-drop-zones">'+classifierCategories.map(k=>'<button type="button" class="eco-drop-zone" data-category="'+k+'" aria-label="Soltar en '+k+'"><span class="eco-drop-icon">'+({Fósil:'◆',Nuclear:'◉',Renovable:'✦',Contextual:'◇'}[k])+'</span><strong>'+k+'</strong><small>'+(k==='Contextual'?'Depende del combustible':'Suelta aquí')+'</small></button>').join('')+'</div></section></div>';
-  $$('.eco-drop-zone').forEach(z=>z.addEventListener('click',()=>{if(selectedClassifierId!==null)classifyDrop(selectedClassifierId,z.dataset.category);}));
+  '<section class="eco-classifier-column eco-classifier-categories"><h3>Grupo al que pertenecen</h3><div class="eco-drop-zones">'+classifierCategories.map(k=>'<div class="eco-drop-zone" role="button" tabindex="0" data-category="'+k+'" aria-label="Soltar en '+k+'"><div class="eco-drop-heading"><span class="eco-drop-icon">'+({Fósil:'◆',Nuclear:'◉',Renovable:'✦',Contextual:'◇'}[k])+'</span><strong>'+k+'</strong><small>'+(k==='Contextual'?'Depende del combustible':'Suelta aquí')+'</small></div><div class="eco-drop-items" aria-label="Elementos clasificados como '+k+'"></div></div>').join('')+'</div></section></div>';
+  $('.eco-drop-zone').forEach(z=>{z.addEventListener('click',e=>{if(e.target.closest('.eco-drag-card'))return;if(selectedClassifierId!==null)classifyDrop(selectedClassifierId,z.dataset.category);});z.addEventListener('keydown',e=>{if((e.key==='Enter'||e.key===' ')&&e.target===z&&selectedClassifierId!==null){e.preventDefault();classifyDrop(selectedClassifierId,z.dataset.category);}});});
   $$('.eco-drag-card').forEach(card=>{
     card.addEventListener('click',()=>{
       if(card.classList.contains('eco-card-answered')||card.dataset.justDragged==='1')return;
@@ -694,13 +709,8 @@ function moveClassifierDrag(e){
     document.body.appendChild(g);d.ghost=g;d.card.classList.add('eco-drag-origin');
   }
   e.preventDefault();
-  const now=performance.now(),dt=Math.max(8,now-d.lastT);
-  const vx=(e.clientX-d.lastX)/dt;
-  const tilt=Math.max(-7,Math.min(7,vx*26));
-  d.lastX=e.clientX;d.lastT=now;
-  // La posición sigue al puntero; la rotación llega con un retraso suave (inercia).
+  // Sin inclinación: la tarjeta conserva su orientación durante el arrastre.
   d.ghost.style.transform='translate3d('+(e.clientX-d.offsetX)+'px,'+(e.clientY-d.offsetY)+'px,0) scale(1.02)';
-  d.ghost.style.rotate=tilt.toFixed(1)+'deg';
   const zone=document.elementFromPoint(e.clientX,e.clientY)?.closest('.eco-drop-zone');
   d.zone=zone||null;
   $$('.eco-drop-zone').forEach(z=>z.classList.toggle('eco-drop-active',z===zone));
@@ -718,8 +728,7 @@ function finishClassifierDrag(e,cancelled){
   if(!d.ghost)return;
   const zone=!cancelled?document.elementFromPoint(e.clientX,e.clientY)?.closest('.eco-drop-zone'):null;
   const target=zone?zone.getBoundingClientRect():d.card.getBoundingClientRect();
-  d.ghost.style.transition='transform 300ms cubic-bezier(.22,1.2,.36,1),rotate 240ms ease-out,opacity 270ms';
-  d.ghost.style.rotate='0deg';
+  d.ghost.style.transition='transform 300ms cubic-bezier(.22,1.2,.36,1),opacity 270ms';
   d.ghost.style.transform='translate3d('+(target.left+(target.width-d.ghost.offsetWidth)/2)+'px,'+(target.top+Math.min(12,target.height/4))+'px,0) scale(.78)';
   d.ghost.style.opacity='0';
   setTimeout(()=>d.ghost.remove(),300);
