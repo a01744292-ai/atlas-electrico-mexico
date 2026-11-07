@@ -440,6 +440,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 @media(max-width:520px){.timeline-item{grid-template-columns:36px minmax(0,1fr);gap:10px}.timeline-marker{width:36px;height:36px}}
 .family-total{margin:-6px 0 16px;font-size:1.32rem;font-weight:900;color:var(--navy);font-variant-numeric:tabular-nums}.family-total span{font-size:.72rem;font-weight:600;color:var(--muted)}.family-clean{font-size:.8rem;background:#eaf5ee;color:var(--navy);padding:8px 10px;border-radius:9px;margin:14px 0 8px}.family-clean strong{color:var(--green)}.family-compare-panel .note a{color:var(--turquoise);font-weight:800;text-decoration:underline}#familyComparison .family-year{display:flex;flex-direction:column}#familyComparison .family-year .family-row{flex-shrink:0}
 .finding-more .finding-source a{display:block;margin-top:8px;padding:7px 9px;background:#ecf6f1;border-radius:8px;color:var(--green);font-weight:800;text-decoration:none;font-size:.72rem;line-height:1.45}.finding-more .finding-source a:hover{text-decoration:underline}.finding-more .finding-source a:focus-visible{outline:3px solid var(--yellow)}
+
+.historical-panel{margin:16px 0 20px;border-left:5px solid var(--green);background:linear-gradient(115deg,#fff,#f4faf7)}
+.historical-panel .panel-head{align-items:center;flex-wrap:wrap;gap:10px}
+.historical-panel .source-chip{color:var(--turquoise);text-decoration:underline;text-underline-offset:3px}
+.historical-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.historical-stats>div{border:1px solid #d3e8dd;background:#fff;border-radius:12px;padding:13px 14px;min-width:0}
+.historical-stats strong{display:block;color:var(--navy);font-size:clamp(1.17rem,2vw,1.65rem);font-variant-numeric:tabular-nums}
+.historical-stats span{display:block;font-size:.81rem;line-height:1.5;color:#4b6170;margin-top:5px}
+.historical-panel .note{margin:13px 0 0;line-height:1.6}
+@media(max-width:730px){.historical-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:480px){.historical-stats{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -550,7 +561,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
       <article class="panel">
         <div class="panel-head"><h3>Indicadores de energía limpia CFE · alcances distintos</h3><span class="source-chip">2022–2024</span></div>
         <div id="cleanTrend" class="trend-chart" aria-label="Tendencia de participación limpia CFE"></div>
-        <p class="note warning-text">Advertencia de comparabilidad: este indicador conserva el 35.97% reportado para 2022 en otra sección del informe; <strong>es distinto del 35.46%</strong> de la infografía de generación por familias. El 2023 reportado (24.70%) también tiene una advertencia de denominador. No son tres cocientes homologados; consulta la matriz por familias para cada alcance.</p>
+        <p class="note warning-text">Advertencia de comparabilidad: el 35.97% aparece como indicador de cumplimiento en la p. 293 del Informe 2022, mientras que <strong>35.46%</strong> corresponde a la composición de generación de la infografía de la p. 37. El 2023 reportado (24.70%) también tiene una advertencia de denominador. No son tres cocientes homologados; consulta la matriz por familias para cada alcance.</p>
       </article>
     </div>
     <article class="panel wide">
@@ -558,7 +569,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
       <div id="technologyBars" class="bars"></div>
       <p class="note">Valores en GWh. 2022: Informe Anual CFE 2022, p. 37 y anexos estadísticos de generación I, II, III, IV, VI y Laguna Verde. 2023–2024: Informe Anual CFE 2024, p. 26. <strong>Son tecnologías seleccionadas, no el total exhaustivo</strong>; en 2022 se excluye la tecnología dual de la categoría carboeléctrica y otras tecnologías térmicas. No utilices estos subtotales para calcular la matriz completa.</p>
     </article>
-    <article class="panel wide family-compare-panel"><div class="panel-head"><div><p class="eyebrow">Fósil · nuclear · renovable</p><h3>Matriz de generación por familias · CFE 2022–2024</h3></div><span class="source-chip">GWh · escala común</span></div><div id="familyComparison" class="family-comparison" aria-label="Comparación anual por fuente fósil, nuclear y renovable"></div><p class="note">Datos reportados por CFE: <a href="https://beta.cfe.mx/finanzas/reportes-financieros/Informe%20Anual%20Documentos/Informe%20Anual%20Portal.pdf" target="_blank" rel="noopener noreferrer">Informe Anual 2022, p. 37</a>; <a href="https://sil.gobernacion.gob.mx/Archivos/Documentos/2024/04/asun_4753509_20240430_1714492645.pdf" target="_blank" rel="noopener noreferrer">Informe Anual 2023, p. 18</a>; <a href="https://www.cfe.gob.mx/finanzas/reportes-financieros/Reportes%20Anuales%20Documentos/Informe%20Anual%202024.pdf" target="_blank" rel="noopener noreferrer">Informe Anual 2024, p. 27</a>. Nuclear es limpia pero <strong>no renovable</strong>.</p><p class="note warning-text"><strong>Alcances:</strong> las infografías 2022 y 2023 excluyen a los Productores Externos de Energía (PEE); la cifra de 2024 incluye unidades en puesta en servicio. Sus totales publicados (139,831 / 144,826 / 154,059.2 GWh) no coinciden con todas las series de generación bruta agregada CFE presentadas en otras gráficas. No atribuir variaciones directamente a causas únicas ni mezclar denominadores. Para 2023, la suma de componentes impresos supera el total publicado en 1 GWh; para 2024 difiere en 0.1 GWh. Se conservan estas diferencias de redondeo sin alterar las cifras fuente.</p></article>
+    <article class="panel wide family-compare-panel"><div class="panel-head"><div><p class="eyebrow">Fósil · nuclear · renovable</p><h3>Matriz de generación por familias · CFE 2022–2024</h3></div><span class="source-chip">GWh · escala común</span></div><div id="familyComparison" class="family-comparison" aria-label="Comparación anual por fuente fósil, nuclear y renovable"></div><p class="note">Datos reportados por CFE: <a href="https://www.cfe.gob.mx/finanzas/reportes-financieros/Informe%20Anual%20Documentos/Informe%20Anual%20Portal.pdf" target="_blank" rel="noopener noreferrer">Informe Anual 2022, p. 37</a>; <a href="https://sil.gobernacion.gob.mx/Archivos/Documentos/2024/04/asun_4753509_20240430_1714492645.pdf" target="_blank" rel="noopener noreferrer">Informe Anual 2023, p. 18</a>; <a href="https://www.cfe.gob.mx/finanzas/reportes-financieros/Reportes%20Anuales%20Documentos/Informe%20Anual%202024.pdf" target="_blank" rel="noopener noreferrer">Informe Anual 2024, p. 27</a>. Nuclear es limpia pero <strong>no renovable</strong>.</p><p class="note warning-text"><strong>Alcances:</strong> las infografías 2022 y 2023 excluyen a los Productores Externos de Energía (PEE); la cifra de 2024 incluye unidades en puesta en servicio. Sus totales publicados (139,831 / 144,826 / 154,059.2 GWh) no coinciden con todas las series de generación bruta agregada CFE presentadas en otras gráficas. No atribuir variaciones directamente a causas únicas ni mezclar denominadores. Para 2023, la suma de componentes impresos supera el total publicado en 1 GWh; para 2024 difiere en 0.1 GWh. Se conservan estas diferencias de redondeo sin alterar las cifras fuente.</p></article>
   </section>
 
   <section id="compare" class="view">
@@ -624,6 +635,15 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
       <div class="stage-metrics"><div><strong>111,138</strong><span>km · CFE Transmisión 2024</span></div><div><strong>2,317</strong><span>subestaciones</span></div><div><strong>168,981</strong><span>MVA transformación</span></div></div>
     </section>
     <p class="stage-source">Fuentes: CFE, <em>Informe Anual 2024</em>, p. 76; SENER, <em>PRODESEN 2024–2038, Anexo 1</em>, pp. 155–156.</p>
+<article class="panel historical-panel" aria-label="Indicadores históricos CFE Transmisión 2022">
+<div class="panel-head"><h3>CFE Transmisión · resultados verificados de 2022</h3><a class="source-chip" href="https://www.cfe.gob.mx/finanzas/reportes-financieros/Informe%20Anual%20Documentos/Informe%20Anual%20Portal.pdf" target="_blank" rel="noopener noreferrer">Informe Anual 2022 · p. 10</a></div>
+<div class="historical-stats">
+<div><strong>3.471 min</strong><span>SAIDI atribuible a transmisión durante 2022</span></div>
+<div><strong>−43%</strong><span>Reducción de SAIDI frente a 2021, reportada por CFE</span></div>
+<div><strong>37.5 MVAr</strong><span>Compensación capacitiva añadida mediante cinco subestaciones</span></div>
+</div>
+<p class="note">Estas cifras describen la transmisión en 2022; su SAIDI tiene alcance distinto del SAIDI por cliente de distribución. Son datos históricos, no mediciones en tiempo real.</p>
+</article>
     <div class="section-head"><div><p class="eyebrow">Sistemas eléctricos</p><h2>SIN, Baja California, BCS y Mulegé</h2></div><button type="button" class="info-btn" aria-label="Definición: red de transmisión" data-tip="La Red Nacional de Transmisión transporta energía a alta tensión; aumentar tensión reduce la corriente necesaria para la misma potencia trifásica y puede reducir pérdidas resistivas.">i</button></div>
     <div id="transmissionMap" class="atlas-map" aria-label="Mapa de sistemas eléctricos de México"></div>
     <div class="callout"><strong>Lectura del mapa:</strong> se muestran áreas/puntos de referencia y su relación eléctrica documentada, no trazos de líneas de transmisión. SIBC se interconecta con WECC mediante dos líneas de 230 kV; SIBCS y Mulegé permanecen aislados del SIN y entre sí.</div>
@@ -648,6 +668,18 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
       <div class="stage-metrics"><div><strong>49.1 M</strong><span>usuarios · 2024</span></div><div><strong>901 mil</strong><span>km de RGD</span></div><div><strong>16</strong><span>divisiones · 150 zonas</span></div></div>
     </section>
     <p class="stage-source">Fuentes: CFE, <em>Informe Anual 2024</em>, pp. 95–97 y 112; CFE, <em>PAM RGD 2024–2038</em>, sección III.</p>
+<article class="panel historical-panel" aria-label="Indicadores históricos CFE Distribución 2022">
+<div class="panel-head"><h3>CFE Distribución · resultados verificados de 2022</h3><a class="source-chip" href="https://www.cfe.gob.mx/finanzas/reportes-financieros/Informe%20Anual%20Documentos/Informe%20Anual%20Portal.pdf" target="_blank" rel="noopener noreferrer">Informe Anual 2022 · pp. 10–11 y 141</a></div>
+<div class="historical-stats">
+<div><strong>11.05%</strong><span>Pérdidas de energía, indicador que incluye alta tensión</span></div>
+<div><strong>13.22%</strong><span>Pérdidas en media + baja tensión (MT + BT); indicador distinto</span></div>
+<div><strong>19.248 min</strong><span>SAIDI de distribución, minutos promedio por cliente</span></div>
+<div><strong>0.411</strong><span>SAIFI de distribución, interrupciones promedio por cliente</span></div>
+<div><strong>1,022</strong><span>Obras de infraestructura eléctrica concluidas con recursos presupuestales</span></div>
+<div><strong>99.29%</strong><span>Cobertura nacional del servicio eléctrico al cierre de 2022</span></div>
+</div>
+<p class="note">La gráfica de pérdidas 2022–2024 de este módulo usa el indicador que incluye alta tensión (11.05% en 2022), no el de MT + BT (13.22%). El SAIDI de distribución tampoco debe mezclarse con el de transmisión.</p>
+</article>
     <div class="section-head"><div><p class="eyebrow">Cobertura CFE</p><h2>Divisiones de distribución</h2></div><button type="button" class="info-btn" aria-label="Definición: distribución eléctrica" data-tip="La distribución entrega electricidad a usuarios desde redes y subestaciones de menor tensión. Las divisiones y zonas son unidades administrativas; un marcador no representa un límite geográfico exacto.">i</button></div>
     <div class="filter-row"><label>División <select id="divisionSelect"></select></label><div id="divisionData" class="division-readout"></div></div>
     <div id="distributionMap" class="atlas-map" aria-label="Mapa de divisiones de distribución CFE"></div>
@@ -701,7 +733,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 3.0 · Eco Solare</span>
+  <span>Versión 3.1 · Validación CFE 2022</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -1419,7 +1451,7 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
     {stage:'Revisión 01',title:'Recursos mejor diferenciados',text:'Cinco criterios explicativos: origen, conversión, renovabilidad, operación e impactos. Los datos numéricos no cambian.'},
     {stage:'Revisión 02',title:'Clasificador con aprendizaje',text:'Cada intento muestra una explicación; las respuestas erróneas muestran la categoría correcta y permiten reintentar.'},
     {stage:'Revisión 03',title:'Conversiones revisadas',text:'Se distinguieron las etapas de turbina nuclear, inversor fotovoltaico, rotor eólico y generador eléctrico.'},
-    {stage:'Revisión 04',title:'Tres años sin cifras inventadas',text:'La comparación por familias conserva 2022 como no disponible; 2023–2024 son subtotales por tecnología, con alcance explícito.'},
+    {stage:'Revisión 04',title:'Tres años sin cifras inventadas',text:'La primera versión carecía de la matriz por familias 2022; se completó con el Informe Anual 2022, manteniendo cifras y alcances oficiales.'},
     {stage:'Revisión 05',title:'Experiencia y accesibilidad',text:'Mejoras en lectura móvil, mensajes, contraste, estados de foco y componentes reutilizables.'},
     {stage:'Revisión 06',title:'Transmisión visible',text:'Corriente (A) y pérdidas (kW) disponen de barras distintas y relaciones físicas señaladas.'},
     {stage:'Revisión 07',title:'Identidad Eco Solare',text:'Se mantiene una sola paleta verde, azul marino, turquesa y amarillo en los cinco módulos.'},
@@ -1429,7 +1461,7 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
     {stage:'Revisión 11',title:'Cierre de matriz 2022 y triangulación documental',text:'Se añadieron 90,252 GWh fósiles, 38,729 GWh renovables y 10,850 GWh nucleares del Informe CFE 2022; se contrastan con la figura de 2023 y la de 2024, conservando las advertencias de alcance.'}
   ];
   const sources=[
-    {name:'CFE · Informe Anual 2022',detail:'Infografía de generación por familias p. 37, anexos estadísticos de generación por tecnología. Fuente oficial del documento proporcionado.',href:'https://beta.cfe.mx/finanzas/reportes-financieros/Informe%20Anual%20Documentos/Informe%20Anual%20Portal.pdf'},
+    {name:'CFE · Informe Anual 2022',detail:'Infografía de generación por familias p. 37, anexos estadísticos de generación por tecnología. Fuente oficial del documento proporcionado.',href:'https://www.cfe.gob.mx/finanzas/reportes-financieros/Informe%20Anual%20Documentos/Informe%20Anual%20Portal.pdf'},
     {name:'CFE · Informe Anual 2023',detail:'Infografías 2022 y 2023 de energía fósil, renovable y nuclear, p. 18. Copia oficial entregada al Senado.',href:'https://sil.gobernacion.gob.mx/Archivos/Documentos/2024/04/asun_4753509_20240430_1714492645.pdf'},
     {name:'CFE · PAM RGD 2024–2038',detail:'Programa de ampliación de redes generales de distribución; cobertura administrativa, infraestructura y electrificación.',href:'https://www.cfe.gob.mx/distribucion/cumplimiento/Documents/PAM%20RGD%202024-2038%20VF.pdf'},
     {name:'SENER/CENACE · PRODESEN 2024–2038, Anexo 1',detail:'Sistemas eléctricos, RNT, interconexiones y principales centrales del SEN.',href:'https://www.cenace.gob.mx/Docs/16_MARCOREGULATORIO/Prodecen/20%202024-2038%20Cap%C3%ADtulos%201%20al%206.pdf'},
