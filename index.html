@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 2.9: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 3.0: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -337,6 +337,15 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:950px){.matrix-grid>.panel .donut-wrap{grid-template-columns:1fr;gap:14px}.matrix-grid>.panel .donut{width:min(100%,270px)}}
 @media(max-width:760px){.matrix-grid>.panel .donut-wrap{min-height:0}.matrix-grid>.panel .donut{width:min(75vw,290px)}}
 
+
+/* v3.0: technical-luxury conversion panels */
+#conversionFlow.flow{min-height:240px;border:1px solid #294c57;border-radius:18px;padding:25px 20px;background-position:center right;box-shadow:inset 0 0 0 1px #ffffff17,0 15px 30px #092f4b17;gap:12px}
+#conversionFlow .flow-step{position:relative;background:rgba(255,255,255,.94);border:1px solid #ffffffb5;color:#123747;font-weight:850;box-shadow:0 6px 22px #001e3060;backdrop-filter:blur(6px);transition:transform .15s,box-shadow .15s}
+#conversionFlow .flow-step:hover{transform:translateY(-3px);box-shadow:0 9px 25px #001e306e}
+#conversionFlow .flow-step.eco-flow-current{border:2px solid #f1c777;background:#fff;box-shadow:0 0 0 3px #f1c77755,0 9px 28px #001e306e}
+#conversionFlow .flow-arrow{color:#f4d28b;text-shadow:0 2px 7px #001c2b}
+@media(max-width:760px){#conversionFlow.flow{min-height:210px;padding:18px 12px}}
+
 </style>
 </head>
 <body>
@@ -349,7 +358,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.9</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 3.0</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -596,7 +605,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 2.9 · Eco Solare</span>
+  <span>Versión 3.0 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -797,12 +806,12 @@ const flows={
 };
 let activeFlow='Gas natural';
 const flowVisuals={
-  'Gas natural':{icon:'🔥',bg:'#123f56',scene:'<path d="M75 245h90v-85h70v85h75V105h50v140h75V155h65v90h90" fill="none" stroke="#fff" stroke-width="9" stroke-linejoin="round"/><path d="M334 105q-30-34 0-70m20 70q-24-30 0-58" fill="none" stroke="#fff" stroke-width="6"/>'},
-  'Carbón':{icon:'⛰️',bg:'#574436',scene:'<path d="M0 255L140 115l95 98 110-135 140 150 105-95 210 122v45H0Z" fill="#fff" opacity=".33"/><path d="M110 245h480M185 215l40-55 35 55m110 0 35-70 48 70" stroke="#fff" stroke-width="7" fill="none"/>'},
-  'Uranio':{icon:'☢️',bg:'#273d62',scene:'<circle cx="395" cy="155" r="112" stroke="#fff" stroke-width="7" fill="none"/><circle cx="395" cy="155" r="22" fill="#fff"/><ellipse cx="395" cy="155" rx="175" ry="55" stroke="#fff" stroke-width="6" fill="none" transform="rotate(55 395 155)"/><ellipse cx="395" cy="155" rx="175" ry="55" stroke="#fff" stroke-width="6" fill="none" transform="rotate(-55 395 155)"/>'},
-  'Radiación solar':{icon:'☀️',bg:'#2d799c',scene:'<circle cx="635" cy="75" r="50" fill="#fff" opacity=".7"/><path d="M95 255l85-100 190 0 85 100Zm50-65h265m-212-35-25 100m100-100 25 100" stroke="#fff" stroke-width="7" fill="none"/><path d="M635 0v15m0 120v30m-90-90h-20m200 0h-20" stroke="#fff" stroke-width="8"/>'},
-  'Viento':{icon:'🌬️',bg:'#317a79',scene:'<path d="M445 260V120m0 0 0-85m0 85-85 45m85-45 80 50M220 255V155m0 0-45-50m45 50 48-35" stroke="#fff" stroke-width="9" fill="none"/><circle cx="445" cy="120" r="13" fill="#fff"/><circle cx="220" cy="155" r="9" fill="#fff"/><path d="M70 90h170M100 125h90" stroke="#fff" stroke-width="6" opacity=".5"/>'},
-  'Agua':{icon:'💧',bg:'#236b9a',scene:'<path d="M0 210Q80 165 160 210T320 210T480 210T640 210T800 210V300H0Z" fill="#fff" opacity=".26"/><path d="M125 75h95v145m-100-80h100m250 80v-90m-45 50 45-50 45 50m-45-50v90" stroke="#fff" stroke-width="10" fill="none"/>'}
+  "Gas natural":{icon:"🔥",bg:"#081D30",bg2:"#0C5061",accent:"#F1B86F",scene:"<g stroke=\"#B8E1E6\" fill=\"none\" stroke-width=\"3\"><path d=\"M590 345h570M630 345V217h115v128m0-106h155v106m-40-147V114h32v231m-262-79h115m178 79V190h145v155m-110-115h120\"/></g><g fill=\"#A6DADD\" opacity=\".16\"><rect x=\"645\" y=\"237\" width=\"70\" height=\"74\" rx=\"4\"/><rect x=\"775\" y=\"258\" width=\"76\" height=\"52\" rx=\"4\"/><rect x=\"945\" y=\"230\" width=\"110\" height=\"83\" rx=\"5\"/></g><g stroke=\"#F1B86F\" stroke-width=\"3\" fill=\"none\" opacity=\".86\"><path d=\"M646 350v-26h99v-31h145v-36h91\"/><circle cx=\"747\" cy=\"293\" r=\"7\" fill=\"#F1B86F\"/><path d=\"M888 114c-25-28 18-48-7-77m25 79c-22-27 16-44-5-71\" opacity=\".57\"/></g><circle cx=\"903\" cy=\"112\" r=\"66\" fill=\"#F1B86F\" opacity=\".07\"/>"},
+  "Carbón":{icon:"⛰️",bg:"#191F2A",bg2:"#514039",accent:"#E7AB6A",scene:"<path d=\"M535 330L680 156l80 96 110-154 118 154 70-78 142 158v88H535Z\" fill=\"#C6A17E\" opacity=\".11\"/><path d=\"M570 350L715 176l63 78 100-126 140 187 83-89 112 122\" fill=\"none\" stroke=\"#C6A17E\" stroke-width=\"3\"/><g stroke=\"#E7AB6A\" fill=\"none\" stroke-width=\"3\"><path d=\"M650 345h463M730 345v-112h160v112m-160-112 81-92 79 92M810 141v204\"/><path d=\"M775 346V249h65v97m-205-40 155-126\" stroke-dasharray=\"5 7\"/></g><g fill=\"#E7AB6A\" opacity=\".13\"><path d=\"M900 325l64-105 64 105z\"/><path d=\"M1020 340l42-70 48 70z\"/></g><g stroke=\"#F8D8B2\" opacity=\".4\"><path d=\"M650 356h440\"/><path d=\"M700 365h370\"/></g>"},
+  "Uranio":{icon:"☢️",bg:"#141B32",bg2:"#243C57",accent:"#B6D9F5",scene:"<g stroke=\"#94BFE6\" fill=\"none\" opacity=\".63\"><ellipse cx=\"865\" cy=\"223\" rx=\"205\" ry=\"70\" stroke-width=\"3\"/><ellipse cx=\"865\" cy=\"223\" rx=\"205\" ry=\"70\" stroke-width=\"3\" transform=\"rotate(60 865 223)\"/><ellipse cx=\"865\" cy=\"223\" rx=\"205\" ry=\"70\" stroke-width=\"3\" transform=\"rotate(-60 865 223)\"/><circle cx=\"865\" cy=\"223\" r=\"118\" stroke-dasharray=\"5 10\" opacity=\".65\"/></g><circle cx=\"865\" cy=\"223\" r=\"30\" fill=\"#9ED3FF\" opacity=\".2\"/><circle cx=\"865\" cy=\"223\" r=\"15\" fill=\"#D3EDFF\"/><g fill=\"#D3EDFF\"><circle cx=\"1065\" cy=\"219\" r=\"9\"/><circle cx=\"768\" cy=\"49\" r=\"8\"/><circle cx=\"746\" cy=\"311\" r=\"7\"/></g><path d=\"M615 358h480\" stroke=\"#A7BEE8\" stroke-width=\"2\" opacity=\".35\"/><g stroke=\"#A7BEE8\" fill=\"none\" opacity=\".3\"><path d=\"M565 265h145l45-55M1075 176h85m-98 28 70 53\"/></g>"},
+  "Radiación solar":{icon:"☀️",bg:"#0C3150",bg2:"#1A6D8C",accent:"#FFD390",scene:"<circle cx=\"989\" cy=\"91\" r=\"65\" fill=\"#FFD390\" opacity=\".19\"/><circle cx=\"989\" cy=\"91\" r=\"43\" fill=\"#FFE4A7\" opacity=\".83\"/><g stroke=\"#FFE4A7\" stroke-width=\"3\" opacity=\".8\"><path d=\"M989 9v19m0 126v20m-80-83h-19m179 0h-20m-120-60-14-14m147 147-14-14m0-119 14-14m-147 147 14-14\"/></g><g stroke=\"#B1DAEF\" stroke-width=\"3\" fill=\"none\"><path d=\"M615 350l68-155h341l72 155Z\"/><path d=\"M655 270h408M633 316h449M770 195l-29 155m126-155v155m104-155 31 155\"/></g><path d=\"M611 352h492\" stroke=\"#FFD390\" stroke-width=\"4\" opacity=\".65\"/><g stroke=\"#FFD390\" stroke-width=\"2\" opacity=\".3\" stroke-dasharray=\"8 10\"><path d=\"M989 136 855 193M989 136 1034 193M989 136 680 193\"/></g>"},
+  "Viento":{icon:"🌬️",bg:"#082E39",bg2:"#17666A",accent:"#A2E5D7",scene:"<g stroke=\"#C6EFED\" fill=\"none\" stroke-linecap=\"round\"><path d=\"M890 359V160m0 0-14-128m14 128 117 55m-117-55-101 75\" stroke-width=\"5\"/><circle cx=\"890\" cy=\"160\" r=\"10\" fill=\"#C6EFED\"/><path d=\"M682 356V231m0 0-10-85m10 85 75 29m-75-29-61 51\" stroke-width=\"4\" opacity=\".65\"/><circle cx=\"682\" cy=\"231\" r=\"7\" fill=\"#C6EFED\" opacity=\".8\"/></g><g stroke=\"#A2E5D7\" fill=\"none\" stroke-linecap=\"round\" opacity=\".4\"><path d=\"M590 105h170c33 0 40-33 14-37\"/><path d=\"M640 146h132c48 0 52-44 16-48\"/><path d=\"M1004 128h150c25 0 32-25 12-29\"/><path d=\"M965 274h145c36 0 40-35 13-39\"/></g><path d=\"M568 362q130-22 235 2t360-7\" stroke=\"#A2E5D7\" stroke-width=\"2\" fill=\"none\" opacity=\".45\"/>"},
+  "Agua":{icon:"💧",bg:"#082E4D",bg2:"#11647C",accent:"#8EDBE9",scene:"<g fill=\"none\" stroke=\"#B2EBF6\"><path d=\"M605 343h540\" stroke-width=\"3\"/><path d=\"M650 330V111h100v215m-100-174h100m-100 49h100m0 102 120-84 95 84\" stroke-width=\"5\"/><path d=\"M868 219v-75h145v190m-115-190v190m42-190v190\" stroke-width=\"3\" opacity=\".65\"/></g><path d=\"M561 352c35-23 70-23 105 0s70 23 105 0 70-23 105 0 70 23 105 0 70-23 105 0 70 23 105 0v68H561z\" fill=\"#8EDBE9\" opacity=\".16\"/><g stroke=\"#8EDBE9\" stroke-width=\"3\" opacity=\".65\" fill=\"none\"><path d=\"M577 369c35-17 70-17 105 0s70 17 105 0 70-17 105 0 70 17 105 0 70-17 105 0\"/><path d=\"M774 230c0 40-10 60-30 92\" stroke-dasharray=\"7 7\"/></g><circle cx=\"926\" cy=\"227\" r=\"42\" stroke=\"#8EDBE9\" stroke-width=\"4\" fill=\"none\" opacity=\".6\"/><path d=\"M926 184v86m-43-43h86\" stroke=\"#8EDBE9\" opacity=\".55\" stroke-width=\"3\"/>"}
 };
 const flowDescriptions={
   'Gas natural':'El combustible almacena energía química. La combustión produce gases calientes que accionan una turbina; en un ciclo combinado, el calor residual genera vapor para una segunda turbina. Finalmente, un generador transforma la rotación en electricidad.',
@@ -819,9 +828,9 @@ function renderFlowSelector(){
 }
 function renderFlow(){
   const arr=flows[activeFlow], visual=flowVisuals[activeFlow];
-  const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 300"><rect width="800" height="300" fill="'+visual.bg+'"/><g opacity=".25">'+visual.scene+'</g></svg>';
+  const svg='<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 420" preserveAspectRatio="xMidYMid slice"><defs><linearGradient id="base" x1="0" y1="0" x2="1" y2="1"><stop stop-color="'+visual.bg+'"/><stop offset="1" stop-color="'+visual.bg2+'"/></linearGradient><radialGradient id="glow"><stop stop-color="'+visual.accent+'" stop-opacity=".19"/><stop offset="1" stop-color="'+visual.accent+'" stop-opacity="0"/></radialGradient><pattern id="mesh" width="38" height="38" patternUnits="userSpaceOnUse"><path d="M38 0H0V38" stroke="#FFFFFF" stroke-opacity=".045" fill="none"/></pattern></defs><rect width="1200" height="420" fill="url(#base)"/><rect width="1200" height="420" fill="url(#mesh)"/><ellipse cx="965" cy="190" rx="360" ry="270" fill="url(#glow)"/><path d="M55 55h100m-100 0v54m1090 255h-100m100 0v-54" fill="none" stroke="'+visual.accent+'" stroke-width="2" opacity=".4"/>'+visual.scene+'<path d="M0 397h1200" stroke="'+visual.accent+'" stroke-width="2" opacity=".32"/></svg>';
   const flow=$('#conversionFlow');
-  flow.style.backgroundImage='linear-gradient(110deg,rgba(6,34,52,.82),rgba(6,34,52,.34)),url("data:image/svg+xml,'+encodeURIComponent(svg)+'")';
+  flow.style.backgroundImage='linear-gradient(100deg,rgba(5,19,30,.68) 0%,rgba(5,19,30,.32) 48%,rgba(5,19,30,.1) 100%),url("data:image/svg+xml,'+encodeURIComponent(svg)+'")';
   flow.innerHTML=arr.map((step,i)=>`${i?'<span class="flow-arrow">→</span>':''}<button class="flow-step ${i===activeFlowStep?'eco-flow-current':''}" data-step="${i}" aria-pressed="${i===activeFlowStep}">${step[0]}</button>`).join('');
   const current=arr[activeFlowStep];
   $('#conversionDetail').innerHTML=`<div class="eco-flow-detail-heading"><span>${visual.icon}</span><strong>${activeFlow}</strong><span class="eco-flow-count">Etapa ${activeFlowStep+1} de ${arr.length}</span></div><p>${flowDescriptions[activeFlow]}</p><div class="eco-flow-stage"><strong>${current[0]}</strong><p>${current[1]}</p></div><div class="eco-flow-controls"><button type="button" class="secondary" id="flowPrev" ${activeFlowStep===0?'disabled':''}>← Anterior</button><button type="button" class="secondary" id="flowNext" ${activeFlowStep===arr.length-1?'disabled':''}>Siguiente →</button></div>`;
