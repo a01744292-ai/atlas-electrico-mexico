@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 2.6: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 2.7: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -316,7 +316,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.6</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.7</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -563,7 +563,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 2.6 · Eco Solare</span>
+  <span>Versión 2.7 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -776,14 +776,37 @@ function renderFlow(){
 
 // ---------- Matriz ----------
 function renderTrend(){
-  const pts=DB.clean_share_cfe; const w=420,h=210,pad=38; const minY=20,maxY=40;
-  const xy=pts.map((p,i)=>({x:pad+i*((w-pad*2)/(pts.length-1)),y:h-pad-(p.value-minY)/(maxY-minY)*(h-pad*2),...p}));
-  const line=xy.map(p=>`${p.x},${p.y}`).join(' ');
-  $('#cleanTrend').innerHTML=`<svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Participación limpia CFE 2022 a 2024">
-    <line x1="${pad}" y1="${h-pad}" x2="${w-pad}" y2="${h-pad}" stroke="#cbdad4"/>
-    <polyline points="${line}" fill="none" stroke="#087F91" stroke-width="4"/>
-    ${xy.map(p=>`<circle cx="${p.x}" cy="${p.y}" r="6" fill="#08783F"/><text x="${p.x}" y="${p.y-12}" text-anchor="middle" font-size="13" font-weight="700" fill="#092F4B">${fmt(p.value,2)}%</text><text x="${p.x}" y="${h-12}" text-anchor="middle" font-size="13" fill="#64727b">${p.year}</text>`).join('')}
-  </svg>`;
+  // La misma gráfica de barras, ejes, cuadrícula y variación absoluta que los demás módulos.
+  // Al tratarse de porcentajes, la diferencia se expresa en puntos porcentuales.
+  const pts=DB.clean_share_cfe;
+  const node=$('#cleanTrend');
+  const vals=pts.map(p=>Number(p.value));
+  const maxVal=Math.max(1,...vals);
+  const magnitude=Math.pow(10,Math.floor(Math.log10(maxVal/4)));
+  const rawStep=maxVal/4/magnitude;
+  const factor=[1,2,2.5,5,10].find(v=>v>=rawStep)||10;
+  const step=factor*magnitude, upper=step*4;
+  const format=v=>fmt(v,2);
+  const axisFormat=v=>fmt(v,Number.isInteger(step)?0:1);
+  const delta=vals[vals.length-1]-vals[0];
+  const trend=(delta===0?'Sin cambio':(delta>0?'+':'−')+format(Math.abs(delta))+' puntos porcentuales');
+  const bars=pts.map((p,i)=>{
+    const height=Math.max(0,Math.min(100,vals[i]/upper*100));
+    const latest=i===pts.length-1;
+    return '<div class="eco-year-col" tabindex="0" role="img" aria-label="'+p.year+': '+format(vals[i])+' por ciento">'+
+      '<div class="eco-bar-value">'+format(vals[i])+'<small>%</small></div>'+
+      '<div class="eco-bar-track"><div class="eco-bar-fill'+(latest?' eco-bar-latest':'')+'" style="height:'+height.toFixed(3)+'%"><span class="eco-bar-glow"></span></div></div>'+
+      '<div class="eco-bar-year">'+p.year+'</div></div>';
+  }).join('');
+  const ticks=[4,3,2,1,0].map(n=>'<span>'+axisFormat(n*step)+'</span>').join('');
+  const grid=Array.from({length:9},(_,i)=>'<span class="eco-grid-line'+(i%2===0?' eco-grid-major':' eco-grid-half')+'" style="top:'+(i*12.5)+'%"></span>').join('');
+  node.classList.add('eco-column-chart','eco-chart-axes');
+  node.innerHTML='<div class="eco-chart-caption"><span>Comparativo anual</span><span class="eco-trend '+(delta>0?'eco-trend-good':'')+'">'+trend+'</span></div>'+
+    '<div class="eco-axis-title eco-axis-y">Porcentaje de generación limpia</div>'+
+    '<div class="eco-chart-layout"><div class="eco-y-axis" aria-label="Escala vertical en porcentaje">'+ticks+'</div>'+
+    '<div class="eco-chart-plot"><div class="eco-grid-lines" aria-hidden="true">'+grid+'</div>'+bars+'</div></div>'+
+    '<div class="eco-axis-title eco-axis-x">Año</div>'+
+    '<div class="eco-chart-foot"><span>Escala desde cero · guías en valores e intervalos medios</span><span>Último año destacado</span></div>';
 }
 function renderTechnologyBars(year='2023'){
   const data=DB.technology_series[year], max=Math.max(...Object.values(data));
