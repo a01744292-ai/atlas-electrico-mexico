@@ -400,6 +400,28 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .tx-chart-caption{font-size:.77rem;color:var(--muted);line-height:1.55;margin:12px 0 2px}
 .sim-warning{grid-column:1/-1;border-left:4px solid var(--yellow);background:#fff7e5;color:var(--navy);padding:11px;font-size:.82rem;border-radius:7px}
 @media(max-width:600px){.tx-chart-header,.tx-data-row{grid-template-columns:56px minmax(0,1fr) minmax(0,1fr);gap:6px;font-size:.71rem}.tx-chart-header{font-size:.66rem}}
+
+/* Auditoría de hallazgos, experiencia de usuario e identidad visual */
+#findingsGrid .finding-card{display:flex;flex-direction:column;gap:7px}
+#findingsGrid .finding-value{margin:3px 0 0;line-height:1.15}
+#findingsGrid .finding-card h3{margin:0;min-height:2.7em}
+#findingsGrid .finding-scope{margin:0}
+#findingsGrid .finding-viz{margin:8px 0;font-size:.74rem}
+#findingsGrid .finding-more{margin-top:auto;border-top:1px solid var(--border);padding-top:11px}
+#findingsGrid .finding-more summary{cursor:pointer;font-weight:800;color:var(--turquoise);font-size:.81rem;line-height:1.45}
+#findingsGrid .finding-more p{font-size:.8rem;line-height:1.6;margin:10px 0}
+#findingsGrid .finding-more .finding-source{overflow-wrap:anywhere;font-size:.72rem;margin:9px 0 0}
+.finding-distinct-units{display:grid;gap:6px;margin:8px 0;padding:8px;border-radius:10px;background:#fff9ec;border:1px solid #f0dfb9}
+.finding-distinct-units div{font-size:.75rem;color:var(--navy);overflow-wrap:anywhere}
+.finding-distinct-units small{font-size:.72rem;color:#80622b;line-height:1.5}
+.finding-part-whole{margin:10px 0}.finding-part-whole>span{display:block;color:var(--muted);font-size:.73rem;margin-top:5px}
+.finding-part-track{height:14px;border-radius:20px;background:#ddebe5;overflow:hidden}
+.finding-part-track i{display:block;height:100%;border-radius:20px;background:var(--green)}
+.stage-hero,.hero-card,.panel,.finding-card{box-shadow:0 12px 28px rgba(9,47,75,.085)}
+.section-head h2,.panel h3,.stage-hero h2{letter-spacing:-.018em}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[role="button"]:focus-visible{outline:3px solid var(--yellow)!important;outline-offset:3px}
+@media(max-width:700px){.stage-hero{grid-template-columns:1fr;padding:21px}.stage-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.stage-metrics strong{font-size:1.1rem}}
+@media(max-width:480px){.stage-metrics{grid-template-columns:1fr 1fr}.finding-filters{gap:5px}}
 </style>
 </head>
 <body>
@@ -630,12 +652,12 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
   <section id="module4" class="module-section">
     <section class="stage-hero findings-hero">
-      <div><h2>¿Sabías que?</h2><p>Veinte hallazgos verificables del sistema eléctrico mexicano, una línea de tiempo de la reforma energética de 2013 y una bitácora visible de revisión por iteraciones de IA.</p></div>
-      <div class="stage-metrics"><div><strong>20</strong><span>hallazgos verificados</span></div><div><strong>5 × 4</strong><span>por tema</span></div><div><strong>8/8</strong><span>controles finales</span></div></div>
+      <div><h2>¿Sabías que?</h2><p>Veinte hallazgos documentados del sistema eléctrico mexicano, una línea de tiempo de la reforma energética de 2013 y una bitácora visible de revisión por iteraciones de IA.</p></div>
+      <div class="stage-metrics"><div><strong>20</strong><span>hallazgos con referencia</span></div><div><strong>5 × 4</strong><span>por tema</span></div><div><strong>12</strong><span>controles automatizados</span></div></div>
     </section>
 
     <div class="section-head"><div><p class="eyebrow">Hallazgos verificables</p><h2>20 datos para entender el sistema</h2></div><span class="source-chip">5 recursos · 5 generación · 5 transmisión · 5 distribución</span></div>
-    <p class="section-copy">Cada tarjeta indica alcance, año, valor, comparación y fuente documental. Los cálculos derivados se identifican como tales; no se atribuye causalidad cuando la fuente sólo permite observar una asociación o evolución.</p>
+    <p class="section-copy">Las cinco tarjetas de cada tema comparten fila en pantallas amplias. Abre «Explicación y fuente» para conocer contexto, alcance y procedencia. No compares como equivalentes indicadores con diferentes unidades, años o coberturas.</p>
     <div class="finding-filters" id="findingFilters" role="group" aria-label="Filtrar hallazgos"></div>
     <div class="findings-grid" id="findingsGrid"></div>
 
@@ -1379,11 +1401,17 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
   ];
 
   const iterations=[
-    {stage:'Iteración 1',title:'Trazabilidad y depuración de datos',text:'Se separaron CFE, SEN nacional, generación bruta/neta, capacidad MW y energía GWh. Se conservaron inconsistencias documentales en vez de corregirlas silenciosamente.'},
-    {stage:'Iteración 2',title:'Interactividad técnica',text:'Se añadieron mapas, filtros, gráficas, clasificador, diagramas de conversión y dos simuladores con casos de prueba reproducibles.'},
-    {stage:'Iteración 3',title:'Revisión final y contexto',text:'Se integraron 20 hallazgos, reforma energética, comparación histórica, fuentes, accesibilidad básica y un banco final de pruebas estructurales.'}
+    {stage:'Revisión 01',title:'Recursos mejor diferenciados',text:'Cinco criterios explicativos: origen, conversión, renovabilidad, operación e impactos. Los datos numéricos no cambian.'},
+    {stage:'Revisión 02',title:'Clasificador con aprendizaje',text:'Cada intento muestra una explicación; las respuestas erróneas muestran la categoría correcta y permiten reintentar.'},
+    {stage:'Revisión 03',title:'Conversiones revisadas',text:'Se distinguieron las etapas de turbina nuclear, inversor fotovoltaico, rotor eólico y generador eléctrico.'},
+    {stage:'Revisión 04',title:'Tres años sin cifras inventadas',text:'La comparación por familias conserva 2022 como no disponible; 2023–2024 son subtotales por tecnología, con alcance explícito.'},
+    {stage:'Revisión 05',title:'Experiencia y accesibilidad',text:'Mejoras en lectura móvil, mensajes, contraste, estados de foco y componentes reutilizables.'},
+    {stage:'Revisión 06',title:'Transmisión visible',text:'Corriente (A) y pérdidas (kW) disponen de barras distintas y relaciones físicas señaladas.'},
+    {stage:'Revisión 07',title:'Identidad Eco Solare',text:'Se mantiene una sola paleta verde, azul marino, turquesa y amarillo en los cinco módulos.'},
+    {stage:'Revisión 08',title:'Cálculos y unidades',text:'Se aclara el transformador monofásico, se comprueba el caso trifásico y se maneja R=0 y entradas no válidas.'},
+    {stage:'Revisión 09',title:'Hallazgos interpretables',text:'Veinte tarjetas agrupadas de cinco en cinco, con detalles ampliables; la capacidad en MW no se compara visualmente con GWh.'},
+    {stage:'Revisión 10',title:'Auditoría funcional y documental',text:'Se amplían las pruebas del sitio y se corrige el enlace CFE 2024. Tener referencia citada no equivale a verificar cada valor.'}
   ];
-
   const sources=[
     {name:'CFE · Informe Anual 2024',detail:'Generación pp. 20–27 y 63; Transmisión pp. 76–77; Distribución pp. 95–97 y 112.',href:'https://www.cfe.gob.mx/finanzas/reportes-financieros/Reportes%20Anuales%20Documentos/Informe%20Anual%202024.pdf'},
     {name:'SENER · PRODESEN 2023–2037, capítulo 4',detail:'Generación total SEN 2022 y participación limpia/fósil, p. 59.',href:'https://www.gob.mx/sener/documentos/programa-de-desarrollo-del-sistema-electrico-nacional-2023-2037'},
@@ -1396,15 +1424,21 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
 
   let ready=false, activeTopic='Todos';
   function compViz(f){
+    if(f.id==='G5')return '<div class="finding-distinct-units"><div><strong>'+f.beforeLabel+'</strong></div><div><strong>'+f.afterLabel+'</strong></div><small>Potencia y energía son magnitudes distintas; no se comparan como barras de la misma unidad.</small></div>';
+    if(f.id==='G4'){
+      const share=f.before/f.after*100;
+      return '<div class="finding-part-whole"><div class="finding-part-track" role="img" aria-label="Energía limpia: '+nf(share,2)+' por ciento del total"><i style="width:'+share.toFixed(3)+'%"></i></div><span>'+f.beforeLabel+' de '+f.afterLabel+'</span></div>';
+    }
     const max=Math.max(f.before,f.after)||1;
-    return `<div class="finding-viz"><div><span>${f.beforeLabel}</span><i><b style="width:${Math.max(3,f.before/max*100)}%"></b></i></div><div><span>${f.afterLabel}</span><i><b style="width:${Math.max(3,f.after/max*100)}%"></b></i></div></div>`;
+    return '<div class="finding-viz" role="img" aria-label="'+f.beforeLabel+' comparado con '+f.afterLabel+'"><div><span>'+f.beforeLabel+'</span><i><b style="width:'+(f.before/max*100).toFixed(3)+'%"></b></i></div><div><span>'+f.afterLabel+'</span><i><b style="width:'+(f.after/max*100).toFixed(3)+'%"></b></i></div></div>';
   }
   function renderFindings(){
     const topics=['Todos','Recursos','Generación','Transmisión','Distribución'];
-    $('#findingFilters').innerHTML=topics.map(t=>`<button class="finding-filter ${t===activeTopic?'active':''}" data-topic="${t}">${t}${t==='Todos'?' · 20':' · 5'}</button>`).join('');
+    const symbols={'Recursos':'⚡','Generación':'⚙️','Transmisión':'🔌','Distribución':'🏘️'};
+    $('#findingFilters').innerHTML=topics.map(t=>'<button class="finding-filter '+(t===activeTopic?'active':'')+'" data-topic="'+t+'" aria-pressed="'+(t===activeTopic)+'">'+t+(t==='Todos'?' · 20':' · 5')+'</button>').join('');
     $$('.finding-filter').forEach(b=>b.addEventListener('click',()=>{activeTopic=b.dataset.topic;renderFindings();}));
     const arr=activeTopic==='Todos'?findings:findings.filter(f=>f.topic===activeTopic);
-    $('#findingsGrid').innerHTML=arr.map(f=>`<article class="finding-card topic-${f.topic.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}"><div class="finding-top"><span class="finding-code">${f.id}</span><span class="finding-kind">${f.kind}</span></div><div class="finding-value">${f.value}</div><h3>${f.title}</h3><p class="finding-scope">${f.scope}</p>${compViz(f)}<p>${f.text}</p><div class="finding-source">${f.source}</div></article>`).join('');
+    $('#findingsGrid').innerHTML=arr.map(f=>'<article class="finding-card topic-'+f.topic.toLowerCase().normalize('NFD').replace(/[\\u0300-\\u036f]/g,'')+'"><div class="finding-top"><span class="finding-code">'+symbols[f.topic]+' '+f.id+'</span><span class="finding-kind">'+f.kind+'</span></div><div class="finding-value">'+f.value+'</div><h3>'+f.title+'</h3><p class="finding-scope">'+f.scope+'</p>'+compViz(f)+'<details class="finding-more"><summary>Explicación y fuente</summary><p>'+f.text+'</p><div class="finding-source">'+f.source+'</div></details></article>').join('');
   }
   function renderTimeline(){
     $('#reformTimeline').innerHTML=timeline.map((x,i)=>`<article class="timeline-item"><div class="timeline-marker">${i+1}</div><div><span class="timeline-date">${x.date}</span><h3>${x.title}</h3><p>${x.text}</p><small>${x.source}</small></div></article>`).join('');
@@ -1419,11 +1453,15 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
     {name:'Cinco módulos presentes',fn:()=>$$('.module-section').length===5,expected:'5'},
     {name:'Veinte hallazgos totales',fn:()=>findings.length===20,expected:'20'},
     {name:'Cinco hallazgos por cada tema',fn:()=>['Recursos','Generación','Transmisión','Distribución'].every(t=>findings.filter(f=>f.topic===t).length===5),expected:'5 × 4'},
-    {name:'Todos los hallazgos tienen fuente',fn:()=>findings.every(f=>f.source&&f.source.length>8),expected:'20/20'},
+    {name:'Todos los hallazgos señalan una referencia',fn:()=>findings.every(f=>f.source&&f.source.length>8),expected:'20/20 referencias indicadas; no es verificación externa'},
     {name:'Cálculo de crecimiento CFE 2023→2024',fn:()=>Math.abs(yoy(150462,154059)-2.3906368385)<1e-9,expected:'2.39064%'},
     {name:'Simulador de transmisión — caso patrón',fn:()=>{const I=100e6/(Math.sqrt(3)*230e3);const L=3*I*I*5/1e3;return Math.abs(I-251.021856)<.001&&Math.abs(L-945.179584)<.01},expected:'251.02 A / 945.18 kW'},
     {name:'Transformador ideal — caso patrón',fn:()=>{const Vp=13800,Vs=Vp/60,Ip=1e6/Vp,Is=1e6/Vs;return Math.abs(Vs-230)<1e-9&&Math.abs(Ip-72.463768)<.001&&Math.abs(Is-4347.826087)<.001},expected:'230 V / 72.464 A / 4347.8 A'},
-    {name:'Cronología y repercusiones documentadas',fn:()=>timeline.length>=6&&impacts.length===5,expected:'8 hitos / 5 repercusiones'}
+    {name:'Cronología y repercusiones documentadas',fn:()=>timeline.length>=6&&impacts.length===5,expected:'8 hitos / 5 repercusiones'},
+    {name:'Controles principales presentes',fn:()=>['resetClassifier','runTests','runTxSim','runTrSim','runGenTest','runFinalQa'].every(id=>!!document.getElementById(id)),expected:'6/6 controles HTML'},
+    {name:'Comparación energética sin inventar 2022',fn:()=>!!document.querySelector('.family-year-missing')&&!!document.getElementById('familyComparison'),expected:'2022 sin desglose; 2023–24 disponibles'},
+    {name:'Visualización respeta unidades diferentes',fn:()=>!!document.querySelector('.finding-distinct-units')&&!!document.querySelector('.finding-part-whole'),expected:'G5 MW/GWh y G4 parte/total diferenciados'},
+    {name:'Diagramas con pasos de conversión explícitos',fn:()=>!!document.querySelector('#conversionFlow .flow-step')&&!!document.getElementById('flowNext')&&!!document.getElementById('flowPrev'),expected:'Selector y navegación presentes'}
   ];
   function runQa(){
     let pass=0;
