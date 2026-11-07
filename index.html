@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 1.9: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 2.0: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -214,6 +214,17 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .eco-concept-expand summary:focus-visible{outline:3px solid #ffad18;outline-offset:-4px}
 @media(max-width:1050px){.module-nav{top:0}.topbar{position:relative}}
 
+
+/* v2.0: tecnologías separadas de fundamentos, tarjetas independientes y flecha triangular. */
+.eco-generation-concepts{margin-top:22px}
+.eco-concept-heading{font-size:1.06rem;color:#092f4b;font-weight:900;margin:20px 0 10px}
+.eco-concept-grid{margin-top:0;grid-template-columns:repeat(3,minmax(0,1fr));align-items:start}
+.eco-concept-grid .eco-concept-expand{align-self:start;height:auto}
+.eco-concept-grid .eco-concept-expand summary{min-height:94px}
+.eco-concept-grid .eco-concept-chevron{display:inline-block;width:0;height:0;margin-left:5px;vertical-align:middle;border-left:5px solid transparent;border-right:5px solid transparent;border-top:7px solid currentColor;transition:transform .2s ease;transform-origin:50% 45%}
+.eco-concept-grid .eco-concept-expand[open] .eco-concept-chevron{transform:rotate(180deg)}
+@media(max-width:700px){.eco-concept-grid{grid-template-columns:1fr}.eco-concept-grid .eco-concept-expand summary{min-height:75px}}
+
 </style>
 </head>
 <body>
@@ -226,7 +237,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 1.9</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.0</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -376,10 +387,16 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <article class="panel"><div class="panel-head"><h3>Indicadores calculados 2024</h3><span class="source-chip">CFE</span></div><div id="generationKpis" class="kpi-list"></div></article>
       <article class="panel"><div class="panel-head"><h3>Contexto nacional</h3><span class="source-chip">SENER / CENACE · serie oficial</span></div><div id="nationalCleanChart" class="simple-chart"></div><p class="note">Serie de generación neta inyectada a la red: 26.68% (2022), 23.19% (2023) y 23.40% (2024). No es directamente comparable con el 31.2% de generación total SEN mostrado en Recursos, porque el alcance y la metodología son distintos.</p></article>
     </div>
-    <div class="concept-grid">
-      <details class="concept-card eco-concept-expand"><summary><strong>Rankine</strong><span class="eco-concept-action">Ver explicación <span aria-hidden="true">⌄</span></span></summary><p>Ciclo termodinámico de vapor: aporte de calor → vapor → turbina → condensador → bomba. Es la base de centrales de vapor y del circuito secundario de una nuclear.</p></details>
-      <details class="concept-card eco-concept-expand"><summary><strong>Vapor convencional</strong><span class="eco-concept-action">Ver explicación <span aria-hidden="true">⌄</span></span></summary><p>Vapor convencional: un combustible aporta calor a una caldera; el vapor mueve una turbina y el generador produce electricidad.</p></details>
-      <details class="concept-card eco-concept-expand"><summary><strong>Ciclo combinado</strong><span class="eco-concept-action">Ver explicación <span aria-hidden="true">⌄</span></span></summary><p>Ciclo combinado: una turbina de gas genera electricidad y sus gases calientes producen vapor para una segunda turbina, aprovechando calor que de otro modo se perdería.</p></details>
+    <div class="eco-generation-concepts">
+      <h3 class="eco-concept-heading">Tecnologías de generación</h3>
+      <div class="concept-grid eco-concept-grid">
+        <details class="concept-card eco-concept-expand"><summary><strong>Vapor convencional</strong><span class="eco-concept-action">Ver explicación <span class="eco-concept-chevron" aria-hidden="true"></span></span></summary><p>Un combustible aporta calor a una caldera; el vapor mueve una turbina conectada a un generador eléctrico.</p></details>
+        <details class="concept-card eco-concept-expand"><summary><strong>Ciclo combinado</strong><span class="eco-concept-action">Ver explicación <span class="eco-concept-chevron" aria-hidden="true"></span></span></summary><p>Una turbina de gas genera electricidad y sus gases calientes producen vapor para accionar una segunda turbina, aprovechando el calor residual.</p></details>
+      </div>
+      <h3 class="eco-concept-heading">Fundamentos termodinámicos</h3>
+      <div class="concept-grid eco-concept-grid">
+        <details class="concept-card eco-concept-expand"><summary><strong>Ciclo Rankine</strong><span class="eco-concept-action">Ver explicación <span class="eco-concept-chevron" aria-hidden="true"></span></span></summary><p>Describe la conversión de calor en trabajo mediante vapor, con etapas de calentamiento, expansión, condensación y bombeo. Se utiliza en centrales de vapor y en la etapa de vapor de muchas centrales de ciclo combinado.</p></details>
+      </div>
     </div>
     <article class="verification-panel"><h3>Prueba de cálculo · crecimiento de generación CFE</h3><p><code>(154,059 − 150,462) / 150,462 × 100</code></p><div id="genTestResult" class="test-result"></div><button class="secondary" id="runGenTest">Comprobar</button></article>
   </section>
@@ -467,7 +484,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 1.9 · Eco Solare</span>
+  <span>Versión 2.0 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
