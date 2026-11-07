@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 2.1: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 2.2: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -252,6 +252,22 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:500px){.eco-card-bank{grid-template-columns:1fr}.eco-drop-zone{min-height:102px}.eco-drag-card{min-height:75px}}
 @media(prefers-reduced-motion:reduce){.eco-drop-zone,.eco-drag-card,.eco-drag-ghost{transition:none!important}}
 
+
+/* v2.2: dos columnas de clasificación, pastel contrastado y rotación con inercia. */
+.eco-classifier-columns{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(270px,.85fr);gap:22px;align-items:start}
+.eco-classifier-column{min-width:0}
+.eco-classifier-column>h3{font-size:1.02rem;font-weight:900;color:#092f4b;margin:0 0 13px}
+.eco-classifier-columns .eco-card-bank{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+.eco-classifier-columns .eco-drop-zones{display:grid;grid-template-columns:1fr;gap:12px;margin:0;position:sticky;top:75px}
+.eco-classifier-columns .eco-drop-zone{min-height:110px}
+.eco-classifier-columns .eco-card-correct{background:#d9f4e3;border:2px solid #62b98a;box-shadow:0 5px 14px #18804a19}
+.eco-classifier-columns .eco-card-wrong{background:#ffe0dc;border:2px solid #e68b80;box-shadow:0 5px 14px #b84b3d16}
+.eco-classifier-columns .eco-card-correct .eco-drag-result{color:#13663b}
+.eco-classifier-columns .eco-card-wrong .eco-drag-result{color:#9c3e35}
+.eco-drag-ghost{transition:rotate 165ms cubic-bezier(.2,.8,.2,1);transform-origin:50% 64%}
+@media(max-width:850px){.eco-classifier-columns{grid-template-columns:minmax(0,1fr) minmax(180px,.75fr);gap:12px}.eco-classifier-columns .eco-card-bank{grid-template-columns:1fr}.eco-classifier-columns .eco-drop-zone{min-height:98px}}
+@media(max-width:520px){.eco-classifier-columns{grid-template-columns:minmax(0,1fr) minmax(125px,.85fr);gap:9px}.eco-classifier-columns .eco-drop-zone{min-height:95px;padding:8px 4px}.eco-classifier-columns .eco-drop-zone strong{font-size:.81rem}.eco-classifier-columns .eco-drop-zone small{font-size:.64rem}.eco-classifier-columns .eco-drag-card{padding:9px;gap:6px}.eco-classifier-columns .eco-drag-copy strong{font-size:.82rem}.eco-classifier-columns .eco-drag-grip{font-size:1rem}.eco-classifier-column>h3{font-size:.84rem}}
+
 </style>
 </head>
 <body>
@@ -264,7 +280,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.1</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.2</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -511,7 +527,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 2.1 · Eco Solare</span>
+  <span>Versión 2.2 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
@@ -616,8 +632,9 @@ function classifyDrop(id,choice){
 function renderClassifier(){
   selectedClassifierId=null;
   $('#classifierGrid').innerHTML='<div class="eco-classifier-intro"><strong>Arrastra y clasifica</strong><span>19 tarjetas · 4 categorías</span></div>'+
-  '<div class="eco-drop-zones">'+classifierCategories.map(k=>'<button type="button" class="eco-drop-zone" data-category="'+k+'" aria-label="Soltar en '+k+'"><span class="eco-drop-icon">'+({Fósil:'◆',Nuclear:'◉',Renovable:'✦',Contextual:'◇'}[k])+'</span><strong>'+k+'</strong><small>'+(k==='Contextual'?'Depende del combustible':'Suelta aquí')+'</small></button>').join('')+'</div>'+
-  '<div class="eco-card-bank">'+classifierCards.map(c=>'<div class="eco-drag-card" tabindex="0" role="button" data-card="'+c.id+'" aria-label="Seleccionar '+c.name+' para clasificar"><div class="eco-drag-grip" aria-hidden="true">⠿</div><div class="eco-drag-copy"><strong>'+c.name+'</strong><small>'+c.type+'</small><div class="eco-drag-result" aria-live="polite"></div></div><span class="eco-drag-hand" aria-hidden="true">↗</span></div>').join('')+'</div>';
+  '<div class="eco-classifier-columns">'+
+  '<section class="eco-classifier-column eco-classifier-resources"><h3>Tipos de energía y tecnologías</h3><div class="eco-card-bank">'+classifierCards.map(c=>'<div class="eco-drag-card" tabindex="0" role="button" data-card="'+c.id+'" aria-label="Seleccionar '+c.name+' para clasificar"><div class="eco-drag-grip" aria-hidden="true">⠿</div><div class="eco-drag-copy"><strong>'+c.name+'</strong><small>'+c.type+'</small><div class="eco-drag-result" aria-live="polite"></div></div><span class="eco-drag-hand" aria-hidden="true">↗</span></div>').join('')+'</div></section>'+
+  '<section class="eco-classifier-column eco-classifier-categories"><h3>Grupo al que pertenecen</h3><div class="eco-drop-zones">'+classifierCategories.map(k=>'<button type="button" class="eco-drop-zone" data-category="'+k+'" aria-label="Soltar en '+k+'"><span class="eco-drop-icon">'+({Fósil:'◆',Nuclear:'◉',Renovable:'✦',Contextual:'◇'}[k])+'</span><strong>'+k+'</strong><small>'+(k==='Contextual'?'Depende del combustible':'Suelta aquí')+'</small></button>').join('')+'</div></section></div>';
   $$('.eco-drop-zone').forEach(z=>z.addEventListener('click',()=>{if(selectedClassifierId!==null)classifyDrop(selectedClassifierId,z.dataset.category);}));
   $$('.eco-drag-card').forEach(card=>{
     card.addEventListener('click',()=>{
@@ -656,10 +673,11 @@ function moveClassifierDrag(e){
   e.preventDefault();
   const now=performance.now(),dt=Math.max(8,now-d.lastT);
   const vx=(e.clientX-d.lastX)/dt;
-  const tilt=Math.max(-16,Math.min(16,vx*85));
+  const tilt=Math.max(-7,Math.min(7,vx*26));
   d.lastX=e.clientX;d.lastT=now;
-  d.ghost.style.transform='translate3d('+(e.clientX-d.offsetX)+'px,'+(e.clientY-d.offsetY)+'px,0) rotate('+tilt.toFixed(1)+'deg) scale(1.035)';
-  d.ghost.style.setProperty('--eco-tilt',tilt.toFixed(1)+'deg');
+  // La posición sigue al puntero; la rotación llega con un retraso suave (inercia).
+  d.ghost.style.transform='translate3d('+(e.clientX-d.offsetX)+'px,'+(e.clientY-d.offsetY)+'px,0) scale(1.02)';
+  d.ghost.style.rotate=tilt.toFixed(1)+'deg';
   const zone=document.elementFromPoint(e.clientX,e.clientY)?.closest('.eco-drop-zone');
   d.zone=zone||null;
   $$('.eco-drop-zone').forEach(z=>z.classList.toggle('eco-drop-active',z===zone));
@@ -677,8 +695,9 @@ function finishClassifierDrag(e,cancelled){
   if(!d.ghost)return;
   const zone=!cancelled?document.elementFromPoint(e.clientX,e.clientY)?.closest('.eco-drop-zone'):null;
   const target=zone?zone.getBoundingClientRect():d.card.getBoundingClientRect();
-  d.ghost.style.transition='transform 280ms cubic-bezier(.22,1.4,.36,1),opacity 260ms';
-  d.ghost.style.transform='translate3d('+(target.left+(target.width-d.ghost.offsetWidth)/2)+'px,'+(target.top+Math.min(12,target.height/4))+'px,0) rotate(0deg) scale(.78)';
+  d.ghost.style.transition='transform 300ms cubic-bezier(.22,1.2,.36,1),rotate 240ms ease-out,opacity 270ms';
+  d.ghost.style.rotate='0deg';
+  d.ghost.style.transform='translate3d('+(target.left+(target.width-d.ghost.offsetWidth)/2)+'px,'+(target.top+Math.min(12,target.height/4))+'px,0) scale(.78)';
   d.ghost.style.opacity='0';
   setTimeout(()=>d.ghost.remove(),300);
   if(zone)classifyDrop(d.id,zone.dataset.category);
