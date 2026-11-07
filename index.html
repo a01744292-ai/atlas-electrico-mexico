@@ -439,6 +439,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
 .info-btn{flex:none;cursor:help}
 @media(max-width:520px){.timeline-item{grid-template-columns:36px minmax(0,1fr);gap:10px}.timeline-marker{width:36px;height:36px}}
 .family-total{margin:-6px 0 16px;font-size:1.32rem;font-weight:900;color:var(--navy);font-variant-numeric:tabular-nums}.family-total span{font-size:.72rem;font-weight:600;color:var(--muted)}.family-clean{font-size:.8rem;background:#eaf5ee;color:var(--navy);padding:8px 10px;border-radius:9px;margin:14px 0 8px}.family-clean strong{color:var(--green)}.family-compare-panel .note a{color:var(--turquoise);font-weight:800;text-decoration:underline}#familyComparison .family-year{display:flex;flex-direction:column}#familyComparison .family-year .family-row{flex-shrink:0}
+.finding-more .finding-source a{display:block;margin-top:8px;padding:7px 9px;background:#ecf6f1;border-radius:8px;color:var(--green);font-weight:800;text-decoration:none;font-size:.72rem;line-height:1.45}.finding-more .finding-source a:hover{text-decoration:underline}.finding-more .finding-source a:focus-visible{outline:3px solid var(--yellow)}
 </style>
 </head>
 <body>
@@ -670,7 +671,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
   <section id="module4" class="module-section">
     <section class="stage-hero findings-hero">
       <div><h2>¿Sabías que?</h2><p>Veinte hallazgos documentados del sistema eléctrico mexicano, una línea de tiempo de la reforma energética de 2013 y una bitácora visible de revisión por iteraciones de IA.</p></div>
-      <div class="stage-metrics"><div><strong>20</strong><span>hallazgos con referencia</span></div><div><strong>5 × 4</strong><span>por tema</span></div><div><strong>15</strong><span>controles automatizados</span></div></div>
+      <div class="stage-metrics"><div><strong>20</strong><span>hallazgos con referencia</span></div><div><strong>5 × 4</strong><span>por tema</span></div><div><strong>16</strong><span>controles automatizados</span></div></div>
     </section>
 
     <div class="section-head"><div><p class="eyebrow">Hallazgos verificables</p><h2>20 datos para entender el sistema</h2></div><button type="button" class="info-btn" aria-label="Definición: dato reportado y derivado" data-tip="Dato reportado: figura en la fuente citada. Dato derivado: se calcula a partir de cifras fuente. Verificación: registra una discrepancia o advertencia. Siempre revisa alcance, año y unidades.">i</button><span class="source-chip">5 recursos · 5 generación · 5 transmisión · 5 distribución</span></div>
@@ -978,7 +979,7 @@ function renderFamilyComparison(){
   const labels=[['fossil','Fósil'],['nuclear','Nuclear'],['renew','Renovable']];
   const max=120000;
   const fmtGwh=v=>Number(v).toLocaleString('es-MX',{minimumFractionDigits:0,maximumFractionDigits:1});
-  node.innerHTML=records.map(d=>'<section class="family-year" aria-label="Matriz CFE '+d.year+'"><h4>'+d.year+'</h4><p class="family-total">'+fmtGwh(d.total)+' <span>GWh · total de la figura</span></p>'+labels.map(([k,label])=>'<div class="family-row"><div class="family-row-head"><span class="family-dot family-'+k+'"></span><strong>'+label+'</strong><span>'+fmtGwh(d[k])+' GWh</span></div><div class="family-track" role="img" aria-label="'+label+': '+fmtGwh(d[k])+' GWh, escala de 0 a 120,000 GWh"><i class="family-bar family-'+k+'" style="width:'+Math.min(100,d[k]/max*100).toFixed(3)+'%"></i></div></div>').join('')+'<p class="family-clean">Energías limpias: <strong>'+fmtGwh(d.clean)+'%</strong></p><small>'+d.scope+'</small></section>').join('');
+  node.innerHTML=records.map(d=>'<section class="family-year" aria-label="Matriz CFE '+d.year+'"><h4>'+d.year+'</h4><p class="family-total">'+fmtGwh(d.total)+' <span>GWh · total de la figura</span></p>'+labels.map(([k,label])=>'<div class="family-row"><div class="family-row-head"><span class="family-dot family-'+k+'"></span><strong>'+label+'</strong><span>'+fmtGwh(d[k])+' GWh</span></div><div class="family-track" role="img" aria-label="'+label+': '+fmtGwh(d[k])+' GWh, escala de 0 a 120,000 GWh"><i class="family-bar family-'+k+'" style="width:'+Math.min(100,d[k]/max*100).toFixed(3)+'%"></i></div></div>').join('')+'<p class="family-clean">Energías limpias: <strong>'+Number(d.clean).toLocaleString('es-MX',{minimumFractionDigits:2,maximumFractionDigits:2})+'%</strong></p><small>'+d.scope+'</small></section>').join('');
 }
 function renderTechnologyBars(year='2022'){
   const data=DB.technology_series[year], max=Math.max(...Object.values(data));
@@ -1430,6 +1431,8 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
   const sources=[
     {name:'CFE · Informe Anual 2022',detail:'Infografía de generación por familias p. 37, anexos estadísticos de generación por tecnología. Fuente oficial del documento proporcionado.',href:'https://beta.cfe.mx/finanzas/reportes-financieros/Informe%20Anual%20Documentos/Informe%20Anual%20Portal.pdf'},
     {name:'CFE · Informe Anual 2023',detail:'Infografías 2022 y 2023 de energía fósil, renovable y nuclear, p. 18. Copia oficial entregada al Senado.',href:'https://sil.gobernacion.gob.mx/Archivos/Documentos/2024/04/asun_4753509_20240430_1714492645.pdf'},
+    {name:'CFE · PAM RGD 2024–2038',detail:'Programa de ampliación de redes generales de distribución; cobertura administrativa, infraestructura y electrificación.',href:'https://www.cfe.gob.mx/distribucion/cumplimiento/Documents/PAM%20RGD%202024-2038%20VF.pdf'},
+    {name:'SENER/CENACE · PRODESEN 2024–2038, Anexo 1',detail:'Sistemas eléctricos, RNT, interconexiones y principales centrales del SEN.',href:'https://www.cenace.gob.mx/Docs/16_MARCOREGULATORIO/Prodecen/20%202024-2038%20Cap%C3%ADtulos%201%20al%206.pdf'},
     {name:'CFE · Informe Anual 2024',detail:'Generación pp. 20–27 y 63; Transmisión pp. 76–77; Distribución pp. 95–97 y 112.',href:'https://www.cfe.gob.mx/finanzas/reportes-financieros/Reportes%20Anuales%20Documentos/Informe%20Anual%202024.pdf'},
     {name:'SENER · PRODESEN 2023–2037, capítulo 4',detail:'Generación total SEN 2022 y participación limpia/fósil, p. 59.',href:'https://www.gob.mx/sener/documentos/programa-de-desarrollo-del-sistema-electrico-nacional-2023-2037'},
     {name:'DOF · Reforma constitucional energética 2013',detail:'Artículos 25, 27 y 28; transitorios tercero y décimo séptimo.',href:'https://sidof.segob.gob.mx/notas/docFuente/5327463'},
@@ -1455,7 +1458,7 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
     $('#findingFilters').innerHTML=topics.map(t=>'<button class="finding-filter '+(t===activeTopic?'active':'')+'" data-topic="'+t+'" aria-pressed="'+(t===activeTopic)+'">'+t+(t==='Todos'?' · 20':' · 5')+'</button>').join('');
     $$('.finding-filter').forEach(b=>b.addEventListener('click',()=>{activeTopic=b.dataset.topic;renderFindings();}));
     const arr=activeTopic==='Todos'?findings:findings.filter(f=>f.topic===activeTopic);
-    $('#findingsGrid').innerHTML=arr.map(f=>'<article class="finding-card topic-'+f.topic.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')+'"><div class="finding-top"><span class="finding-code">'+symbols[f.topic]+' '+f.id+'</span><span class="finding-kind">'+f.kind+'</span></div><div class="finding-value">'+f.value+'</div><h3>'+f.title+'</h3><p class="finding-scope">'+f.scope+'</p>'+compViz(f)+'<details class="finding-more"><summary>Explicación y fuente</summary><p>'+f.text+'</p><div class="finding-source">'+f.source+'</div></details></article>').join('');
+    $('#findingsGrid').innerHTML=arr.map(f=>'<article class="finding-card topic-'+f.topic.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')+'"><div class="finding-top"><span class="finding-code">'+symbols[f.topic]+' '+f.id+'</span><span class="finding-kind">'+f.kind+'</span></div><div class="finding-value">'+f.value+'</div><h3>'+f.title+'</h3><p class="finding-scope">'+f.scope+'</p>'+compViz(f)+'<details class="finding-more"><summary>Explicación y fuente</summary><p>'+f.text+'</p><div class="finding-source">'+f.source+'<a href="'+(f.id==='R1'?'https://www.gob.mx/sener/es/articulos/programa-de-desarrollo-del-sistema-electrico-nacional-2023-2037':'https://www.cfe.gob.mx/finanzas/reportes-financieros/Reportes%20Anuales%20Documentos/Informe%20Anual%202024.pdf')+'" target="_blank" rel="noopener noreferrer">Consultar documento oficial ↗</a>'+(f.id==='R5'?'<a href="https://www.diputados.gob.mx/LeyesBiblio/pdf/LSE.pdf" target="_blank" rel="noopener noreferrer">Consultar Ley del Sector Eléctrico ↗</a>':'')+'</div></details></article>').join('');
   }
   function renderTimeline(){
     $('#reformTimeline').innerHTML=timeline.map((x,i)=>`<article class="timeline-item"><div class="timeline-marker" aria-hidden="true">${i+1}</div><details class="timeline-entry"><summary class="timeline-entry-summary"><span class="timeline-date">${x.date}</span><span class="timeline-entry-title">${x.title}</span><span class="timeline-expand" aria-hidden="true">+</span></summary><div class="timeline-entry-content"><p>${x.text}</p><small>Fuente: ${x.source}</small></div></details></article>`).join('');
@@ -1481,7 +1484,8 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
     {name:'Diagramas con pasos de conversión explícitos',fn:()=>!!document.querySelector('#conversionFlow .flow-step')&&!!document.getElementById('flowNext')&&!!document.getElementById('flowPrev'),expected:'Selector y navegación presentes'},
     {name:'Línea de tiempo interactiva',fn:()=>$$('#reformTimeline details.timeline-entry').length===timeline.length,expected:'Cada hito se puede expandir'},
     {name:'Definiciones emergentes en los módulos',fn:()=>$$('[data-tip]').length>=8,expected:'Al menos 8 términos con ayuda'},
-    {name:'Cifras CFE 2022 validadas aritméticamente',fn:()=>90252+38729+10850===139831,expected:'90,252 + 38,729 + 10,850 = 139,831 GWh'}
+    {name:'Cifras CFE 2022 validadas aritméticamente',fn:()=>90252+38729+10850===139831,expected:'90,252 + 38,729 + 10,850 = 139,831 GWh'},
+    {name:'Los 20 hallazgos ofrecen fuente consultable',fn:()=>$$('#findingsGrid .finding-more .finding-source a[href^="https://"]').length>=20,expected:'Al menos 20 enlaces a documentos oficiales'}
   ];
   function runQa(){
     let pass=0;
