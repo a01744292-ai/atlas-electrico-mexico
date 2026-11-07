@@ -127,7 +127,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:600px){.eco-chart-plot{height:192px;gap:8px;padding:0 3px}.eco-bar-value{font-size:.78rem}.eco-chart-caption{font-size:.68rem}.eco-trend{font-size:.68rem}.eco-chart-foot{font-size:.62rem}}
 
 
-/* Versión 2.8: ejes visibles y líneas guía vinculadas a valores reales. */
+/* Versión 2.9: ejes visibles y líneas guía vinculadas a valores reales. */
 .eco-chart-axes .eco-chart-layout{display:grid;grid-template-columns:65px minmax(0,1fr);align-items:stretch;gap:7px;margin-top:8px}
 .eco-chart-axes .eco-y-axis{height:187px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;padding-right:5px;font-size:.72rem;font-weight:800;color:#496b75;font-variant-numeric:tabular-nums;white-space:nowrap;line-height:1;position:relative}
 .eco-chart-axes .eco-y-axis::before{content:"";position:absolute;right:-7px;top:0;bottom:0;border-right:2px solid #446b76}
@@ -328,6 +328,15 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 .eco-flow-controls button:disabled{opacity:.4;cursor:default}
 @media(max-width:760px){.matrix-grid>.panel{min-height:0}.donut-wrap{grid-template-columns:1fr;gap:12px}.donut{width:min(68vw,250px)}.eco-flow-detail-heading{flex-wrap:wrap}.eco-flow-count{margin-left:0}}
 
+
+/* v2.9 · dona ampliada y alineada con la gráfica comparativa */
+.matrix-grid>.panel{display:flex;flex-direction:column}
+.matrix-grid>.panel .donut-wrap{flex:1;min-height:310px;grid-template-columns:minmax(0,1.5fr) minmax(115px,.7fr);gap:8px}
+.matrix-grid>.panel .donut{width:min(100%,290px);max-width:290px}
+.matrix-grid>.panel .donut:after{width:60%;height:60%}
+@media(max-width:950px){.matrix-grid>.panel .donut-wrap{grid-template-columns:1fr;gap:14px}.matrix-grid>.panel .donut{width:min(100%,270px)}}
+@media(max-width:760px){.matrix-grid>.panel .donut-wrap{min-height:0}.matrix-grid>.panel .donut{width:min(75vw,290px)}}
+
 </style>
 </head>
 <body>
@@ -340,7 +349,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <p class="subtitle">De los recursos energéticos al consumidor</p>
     </div>
   </div>
-  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.8</button>
+  <button id="dataStatusBtn" class="status-pill" aria-expanded="false">Versión 2.9</button>
 </header>
 
 <nav class="module-nav" aria-label="Módulos del Atlas">
@@ -587,7 +596,7 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 
 <footer>
   <span>Eco Solare · Atlas Eléctrico de México</span>
-  <span>Versión 2.8 · Eco Solare</span>
+  <span>Versión 2.9 · Eco Solare</span>
 </footer>
 
 <div id="tooltip" class="tooltip hidden" role="dialog" aria-live="polite"></div>
