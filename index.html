@@ -422,6 +422,22 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,[role="button"]:focus-visible{outline:3px solid var(--yellow)!important;outline-offset:3px}
 @media(max-width:700px){.stage-hero{grid-template-columns:1fr;padding:21px}.stage-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}.stage-metrics strong{font-size:1.1rem}}
 @media(max-width:480px){.stage-metrics{grid-template-columns:1fr 1fr}.finding-filters{gap:5px}}
+
+/* Criterios de aceptación: cronología interactiva y glosario accesible */
+.timeline-entry{min-width:0;background:#fff;border:1px solid var(--border);border-radius:13px;box-shadow:var(--shadow);overflow:hidden;margin-bottom:12px}
+.timeline-entry-summary{display:flex;gap:7px;flex-wrap:wrap;align-items:center;position:relative;cursor:pointer;list-style:none;padding:12px 42px 12px 15px}
+.timeline-entry-summary::-webkit-details-marker{display:none}
+.timeline-entry-summary::marker{content:""}
+.timeline-entry-title{color:var(--navy);font-size:1rem;font-weight:850;flex-basis:100%}
+.timeline-entry-summary:hover{background:#f1f9f5}
+.timeline-expand{position:absolute;right:14px;top:50%;transform:translateY(-50%);font-size:1.4rem;font-weight:600;color:var(--green)}
+.timeline-entry[open] .timeline-expand{transform:translateY(-50%) rotate(45deg)}
+.timeline-entry[open] .timeline-entry-summary{background:#f2f8f5}
+.timeline-entry-content{padding:2px 15px 16px;color:var(--muted);font-size:.87rem;line-height:1.65}
+.timeline-entry-content p{margin:0 0 8px}
+.timeline-entry-content small{font-size:.77rem}
+.info-btn{flex:none;cursor:help}
+@media(max-width:520px){.timeline-item{grid-template-columns:36px minmax(0,1fr);gap:10px}.timeline-marker{width:36px;height:36px}}
 </style>
 </head>
 <body>
@@ -508,7 +524,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
   </section>
 
   <section id="conversion" class="view">
-    <div class="section-head"><div><p class="eyebrow">Transformación energética</p><h2>Diagramas de conversión</h2></div></div>
+    <div class="section-head"><div><p class="eyebrow">Transformación energética</p><h2>Diagramas de conversión</h2></div><button type="button" class="info-btn" aria-label="Definición: transformación energética" data-tip="La conversión energética transforma una forma de energía en otra. La energía no se crea: se transforma y parte se disipa como calor en procesos reales.">i</button></div>
     <div class="conversion-layout">
       <div id="conversionSelector" class="selector-list"></div>
       <div>
@@ -519,7 +535,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
   </section>
 
   <section id="matrix" class="view">
-    <div class="section-head"><div><p class="eyebrow">Datos oficiales</p><h2>Matriz energética</h2></div></div>
+    <div class="section-head"><div><p class="eyebrow">Datos oficiales</p><h2>Matriz energética</h2></div><button type="button" class="info-btn" aria-label="Definición: matriz energética" data-tip="La matriz de generación muestra la participación de distintas fuentes o tecnologías en la energía producida (GWh). No es lo mismo que capacidad instalada (MW).">i</button></div>
     <div class="matrix-grid">
       <article class="panel">
         <div class="panel-head"><h3>SEN 2022</h3><span class="source-chip">PRODESEN p. 59</span></div>
@@ -544,7 +560,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
   </section>
 
   <section id="compare" class="view">
-    <div class="section-head"><div><p class="eyebrow">Comparación conceptual</p><h2>Comparador energético</h2></div></div>
+    <div class="section-head"><div><p class="eyebrow">Comparación conceptual</p><h2>Comparador energético</h2></div><button type="button" class="info-btn" aria-label="Definición: recurso renovable" data-tip="Un recurso renovable se repone en escalas humanas. Una energía limpia responde a una clasificación técnica o legal: ambas categorías no son equivalentes.">i</button></div>
     <p class="section-copy">Selecciona al menos dos recursos. Los factores cuantitativos de emisiones no se muestran porque no existe una fuente ambiental cargada que los documente.</p>
     <div class="compare-picker" id="comparePicker"></div>
     <div class="table-wrap"><table id="compareTable"><thead></thead><tbody></tbody></table></div>
@@ -575,7 +591,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
       <div class="stage-metrics"><div><strong>154,059</strong><span>GWh CFE · 2024</span></div><div><strong>61,720.1</strong><span>MW CFE + Gen V · 2024</span></div><div><strong>≥15</strong><span>centrales verificadas</span></div></div>
     </section>
     <p class="stage-source">Fuentes principales: CFE, <em>Informe Anual 2024</em>, pp. 20–27, 63, 273–294; SENER, <em>PRODESEN 2024–2038, Anexo 1</em>, cuadro de principales centrales.</p>
-    <div class="section-head"><div><p class="eyebrow">Geografía de generación</p><h2>Centrales eléctricas seleccionadas</h2></div></div>
+    <div class="section-head"><div><p class="eyebrow">Geografía de generación</p><h2>Centrales eléctricas seleccionadas</h2></div><button type="button" class="info-btn" aria-label="Definición: MW y GWh" data-tip="MW expresa potencia o capacidad instantánea. GWh expresa energía acumulada durante un periodo. Una central de gran capacidad no necesariamente genera más energía anual.">i</button></div>
     <div class="filter-row"><label>Tecnología <select id="plantTechFilter"><option value="all">Todas</option></select></label><label>Entidad <select id="plantStateFilter"><option value="all">Todas</option></select></label></div>
     <div id="generationMap" class="atlas-map" aria-label="Mapa de centrales eléctricas"></div>
     <div id="plantCount" class="map-footnote"></div>
@@ -606,7 +622,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
       <div class="stage-metrics"><div><strong>111,138</strong><span>km · CFE Transmisión 2024</span></div><div><strong>2,317</strong><span>subestaciones</span></div><div><strong>168,981</strong><span>MVA transformación</span></div></div>
     </section>
     <p class="stage-source">Fuentes: CFE, <em>Informe Anual 2024</em>, p. 76; SENER, <em>PRODESEN 2024–2038, Anexo 1</em>, pp. 155–156.</p>
-    <div class="section-head"><div><p class="eyebrow">Sistemas eléctricos</p><h2>SIN, Baja California, BCS y Mulegé</h2></div></div>
+    <div class="section-head"><div><p class="eyebrow">Sistemas eléctricos</p><h2>SIN, Baja California, BCS y Mulegé</h2></div><button type="button" class="info-btn" aria-label="Definición: red de transmisión" data-tip="La Red Nacional de Transmisión transporta energía a alta tensión; aumentar tensión reduce la corriente necesaria para la misma potencia trifásica y puede reducir pérdidas resistivas.">i</button></div>
     <div id="transmissionMap" class="atlas-map" aria-label="Mapa de sistemas eléctricos de México"></div>
     <div class="callout"><strong>Lectura del mapa:</strong> se muestran áreas/puntos de referencia y su relación eléctrica documentada, no trazos de líneas de transmisión. SIBC se interconecta con WECC mediante dos líneas de 230 kV; SIBCS y Mulegé permanecen aislados del SIN y entre sí.</div>
     <div class="dashboard-grid two-col">
@@ -630,7 +646,7 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
       <div class="stage-metrics"><div><strong>49.1 M</strong><span>usuarios · 2024</span></div><div><strong>901 mil</strong><span>km de RGD</span></div><div><strong>16</strong><span>divisiones · 150 zonas</span></div></div>
     </section>
     <p class="stage-source">Fuentes: CFE, <em>Informe Anual 2024</em>, pp. 95–97 y 112; CFE, <em>PAM RGD 2024–2038</em>, sección III.</p>
-    <div class="section-head"><div><p class="eyebrow">Cobertura CFE</p><h2>Divisiones de distribución</h2></div></div>
+    <div class="section-head"><div><p class="eyebrow">Cobertura CFE</p><h2>Divisiones de distribución</h2></div><button type="button" class="info-btn" aria-label="Definición: distribución eléctrica" data-tip="La distribución entrega electricidad a usuarios desde redes y subestaciones de menor tensión. Las divisiones y zonas son unidades administrativas; un marcador no representa un límite geográfico exacto.">i</button></div>
     <div class="filter-row"><label>División <select id="divisionSelect"></select></label><div id="divisionData" class="division-readout"></div></div>
     <div id="distributionMap" class="atlas-map" aria-label="Mapa de divisiones de distribución CFE"></div>
     <div class="callout warning"><strong>Geometría:</strong> la fuente oficial confirma las 16 divisiones, pero el sitio no dispone de polígonos GIS oficiales cargados. Por ello se usan puntos administrativos de referencia; los límites exactos se muestran como <em>Dato no disponible</em>, no se inventan.</div>
@@ -653,17 +669,17 @@ button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,su
   <section id="module4" class="module-section">
     <section class="stage-hero findings-hero">
       <div><h2>¿Sabías que?</h2><p>Veinte hallazgos documentados del sistema eléctrico mexicano, una línea de tiempo de la reforma energética de 2013 y una bitácora visible de revisión por iteraciones de IA.</p></div>
-      <div class="stage-metrics"><div><strong>20</strong><span>hallazgos con referencia</span></div><div><strong>5 × 4</strong><span>por tema</span></div><div><strong>12</strong><span>controles automatizados</span></div></div>
+      <div class="stage-metrics"><div><strong>20</strong><span>hallazgos con referencia</span></div><div><strong>5 × 4</strong><span>por tema</span></div><div><strong>14</strong><span>controles automatizados</span></div></div>
     </section>
 
-    <div class="section-head"><div><p class="eyebrow">Hallazgos verificables</p><h2>20 datos para entender el sistema</h2></div><span class="source-chip">5 recursos · 5 generación · 5 transmisión · 5 distribución</span></div>
+    <div class="section-head"><div><p class="eyebrow">Hallazgos verificables</p><h2>20 datos para entender el sistema</h2></div><button type="button" class="info-btn" aria-label="Definición: dato reportado y derivado" data-tip="Dato reportado: figura en la fuente citada. Dato derivado: se calcula a partir de cifras fuente. Verificación: registra una discrepancia o advertencia. Siempre revisa alcance, año y unidades.">i</button><span class="source-chip">5 recursos · 5 generación · 5 transmisión · 5 distribución</span></div>
     <p class="section-copy">Las cinco tarjetas de cada tema comparten fila en pantallas amplias. Abre «Explicación y fuente» para conocer contexto, alcance y procedencia. No compares como equivalentes indicadores con diferentes unidades, años o coberturas.</p>
     <div class="finding-filters" id="findingFilters" role="group" aria-label="Filtrar hallazgos"></div>
     <div class="findings-grid" id="findingsGrid"></div>
 
     <div class="section-head"><div><p class="eyebrow">Historia institucional</p><h2>Reforma energética de 2013: ¿qué cambió?</h2></div></div>
     <div class="callout"><strong>Criterio de lectura:</strong> la línea de tiempo separa cambios constitucionales y legales de resultados posteriores. Que un indicador cambie después de una reforma no demuestra, por sí solo, que la reforma haya causado ese cambio.</div>
-    <div class="timeline" id="reformTimeline"></div>
+    <p class="section-copy">Selecciona cada acontecimiento para desplegar su explicación y fuente documental. Se puede usar clic o teclado.</p><div class="timeline" id="reformTimeline"></div>
 
     <div class="section-head"><div><p class="eyebrow">Comparación histórica</p><h2>Antes de 2013 · reforma 2013–2014 · marco vigente 2025</h2></div></div>
     <div class="table-wrap"><table class="history-table"><thead><tr><th>Dimensión</th><th>Antes de 2013</th><th>Reforma 2013–2014</th><th>Marco 2025</th></tr></thead><tbody id="historyCompare"></tbody></table></div>
@@ -712,7 +728,7 @@ function showTip(text){
   const t=$('#tooltip');t.textContent=text;t.classList.remove('hidden');
   clearTimeout(showTip.timer);showTip.timer=setTimeout(()=>t.classList.add('hidden'),6500);
 }
-$$('[data-tip]').forEach(b=>b.addEventListener('click',()=>showTip(b.dataset.tip)));
+$$('[data-tip]').forEach(b=>{b.addEventListener('click',()=>showTip(b.dataset.tip));b.addEventListener('mouseenter',()=>showTip(b.dataset.tip));b.addEventListener('focus',()=>showTip(b.dataset.tip));});
 
 $('#dataStatusBtn').addEventListener('click',()=>{
   const p=$('#statusPanel');
@@ -1441,7 +1457,7 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
     $('#findingsGrid').innerHTML=arr.map(f=>'<article class="finding-card topic-'+f.topic.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')+'"><div class="finding-top"><span class="finding-code">'+symbols[f.topic]+' '+f.id+'</span><span class="finding-kind">'+f.kind+'</span></div><div class="finding-value">'+f.value+'</div><h3>'+f.title+'</h3><p class="finding-scope">'+f.scope+'</p>'+compViz(f)+'<details class="finding-more"><summary>Explicación y fuente</summary><p>'+f.text+'</p><div class="finding-source">'+f.source+'</div></details></article>').join('');
   }
   function renderTimeline(){
-    $('#reformTimeline').innerHTML=timeline.map((x,i)=>`<article class="timeline-item"><div class="timeline-marker">${i+1}</div><div><span class="timeline-date">${x.date}</span><h3>${x.title}</h3><p>${x.text}</p><small>${x.source}</small></div></article>`).join('');
+    $('#reformTimeline').innerHTML=timeline.map((x,i)=>`<article class="timeline-item"><div class="timeline-marker" aria-hidden="true">${i+1}</div><details class="timeline-entry"><summary class="timeline-entry-summary"><span class="timeline-date">${x.date}</span><span class="timeline-entry-title">${x.title}</span><span class="timeline-expand" aria-hidden="true">+</span></summary><div class="timeline-entry-content"><p>${x.text}</p><small>Fuente: ${x.source}</small></div></details></article>`).join('');
     $('#historyCompare').innerHTML=history.map(r=>`<tr>${r.map((c,i)=>`<${i?'td':'th'}>${c}</${i?'td':'th'}>`).join('')}</tr>`).join('');
     $('#reformImpacts').innerHTML=impacts.map(x=>`<article class="impact-card"><div class="impact-number">${x.n}</div><span class="source-chip">${x.type}</span><h3>${x.title}</h3><strong>${x.metric}</strong><p>${x.text}</p><small>${x.source}</small></article>`).join('');
   }
@@ -1461,7 +1477,9 @@ resourceInitTasks.forEach(([name,fn])=>{try{fn()}catch(error){console.error('Atl
     {name:'Controles principales presentes',fn:()=>['resetClassifier','runTests','runTxSim','runTrSim','runGenTest','runFinalQa'].every(id=>!!document.getElementById(id)),expected:'6/6 controles HTML'},
     {name:'Comparación energética sin inventar 2022',fn:()=>!!document.querySelector('.family-year-missing')&&!!document.getElementById('familyComparison'),expected:'2022 sin desglose; 2023–24 disponibles'},
     {name:'Visualización respeta unidades diferentes',fn:()=>!!document.querySelector('.finding-distinct-units')&&!!document.querySelector('.finding-part-whole'),expected:'G5 MW/GWh y G4 parte/total diferenciados'},
-    {name:'Diagramas con pasos de conversión explícitos',fn:()=>!!document.querySelector('#conversionFlow .flow-step')&&!!document.getElementById('flowNext')&&!!document.getElementById('flowPrev'),expected:'Selector y navegación presentes'}
+    {name:'Diagramas con pasos de conversión explícitos',fn:()=>!!document.querySelector('#conversionFlow .flow-step')&&!!document.getElementById('flowNext')&&!!document.getElementById('flowPrev'),expected:'Selector y navegación presentes'},
+    {name:'Línea de tiempo interactiva',fn:()=>$$('#reformTimeline details.timeline-entry').length===timeline.length,expected:'Cada hito se puede expandir'},
+    {name:'Definiciones emergentes en los módulos',fn:()=>$$('[data-tip]').length>=8,expected:'Al menos 8 términos con ayuda'}
   ];
   function runQa(){
     let pass=0;
