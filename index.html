@@ -358,6 +358,19 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
 @media(max-width:1250px){#findingsGrid.findings-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:800px){#findingsGrid.findings-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:520px){#findingsGrid.findings-grid{grid-template-columns:minmax(0,1fr)}}
+/* Auditoría de comprensión y clasificador */
+.energy-guide{margin:18px 0 20px;padding:20px;border:1px solid var(--border);border-radius:18px;background:linear-gradient(130deg,#fff,#f0f8f6);box-shadow:var(--shadow)}
+.energy-guide h3{color:var(--navy);margin:0 0 14px}
+.energy-guide-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.energy-guide-grid article{background:#fff;border:1px solid #dceae5;border-top:3px solid var(--green);padding:12px;border-radius:12px;min-width:0}
+.energy-guide-grid strong{display:block;color:var(--navy);font-size:.86rem}.energy-guide-grid p{margin:7px 0 0;font-size:.81rem;line-height:1.5;color:var(--muted)}
+.eco-classifier-feedback{grid-column:1/-1;display:flex;align-items:flex-start;gap:12px;flex-wrap:wrap;padding:13px 16px;background:#eff8f5;border:1px solid #d0e6dc;border-left:4px solid var(--green);border-radius:12px;color:var(--navy)}
+.eco-classifier-feedback strong{font-size:.92rem}.eco-classifier-feedback span{flex:1;min-width:180px;font-size:.86rem;line-height:1.55}
+.eco-classifier-feedback.is-incorrect{border-left-color:#d49b33;background:#fff8e8}
+.eco-drag-result{overflow-wrap:anywhere}
+@media(max-width:1180px){.energy-guide-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:700px){.energy-guide-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:500px){.energy-guide-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -429,13 +442,14 @@ button,select,.map-legend span,.map-kicker{font-weight:700}
       <button class="info-btn" data-tip="La aplicación separa recurso primario, combustible, conversión y tecnología para evitar confundir, por ejemplo, gas natural con ciclo combinado.">i</button>
     </div>
     <div class="resource-columns" id="resourceColumns"></div>
+    <div class="energy-guide" aria-label="Cinco criterios para comparar las fuentes de energía"><h3>Guía de lectura · cinco diferencias clave</h3><div class="energy-guide-grid"><article><strong>01 · Origen</strong><p>Fósiles: combustibles formados durante millones de años. Nuclear: material fisible. Renovables: flujos naturales que se reponen.</p></article><article><strong>02 · Conversión</strong><p>Fósiles: combustión y máquinas térmicas. Nuclear: fisión y ciclo térmico. Solar fotovoltaica: luz a electricidad sin turbina.</p></article><article><strong>03 · Renovable ≠ limpia</strong><p>El uranio no es renovable; la generación nuclear se clasifica legalmente como limpia en México.</p></article><article><strong>04 · Operación</strong><p>Solar y eólica dependen del recurso disponible; hidráulica, geotermia y centrales térmicas tienen restricciones diferentes.</p></article><article><strong>05 · Impactos y escala</strong><p>Compara emisiones durante la operación, residuos, uso de recursos y estabilidad; distingue potencia (MW) de energía (GWh).</p></article></div></div>
     <div class="callout warning"><strong>Importante:</strong> “energía limpia” y “energía renovable” no son sinónimos. La Ley del Sector Eléctrico 2025 incluye la energía nucleoeléctrica dentro de Energías Limpias, aunque el uranio no es renovable.</div>
   </section>
 
   <section id="classifier" class="view">
     <div class="section-head">
       <div><p class="eyebrow">Actividad interactiva</p><h2>Clasificador de recursos y tecnologías</h2></div>
-      <div class="score" id="scoreBox">0 aciertos · 0 errores</div>
+      <div class="score" id="scoreBox">0 de 19 clasificadas · 0 intentos incorrectos</div>
     </div>
     <p class="section-copy">Arrastra cada tarjeta y suéltala sobre la categoría correspondiente. Las tecnologías que dependen del combustible tienen su propia categoría. También puedes seleccionar una tarjeta y después una categoría con el teclado o mediante clic.</p>
     <div class="classifier-grid" id="classifierGrid"></div>
@@ -697,16 +711,19 @@ let selectedClassifierId=null,dragClassifier=null;
 const classifierCategories=['Fósil','Nuclear','Renovable','Contextual'];
 function classifierFeedback(c,choice){
   const correct=c.answer===choice;
-  if(!classScore.answered.has(c.id)){
-    classScore.answered.add(c.id);
-    correct?classScore.ok++:classScore.bad++;
+  if(correct && !classScore.answered.has(c.id)){classScore.ok++;classScore.answered.add(c.id);}
+  if(!correct)classScore.bad++;
+  $('#scoreBox').textContent=`${classScore.ok} de ${classifierCards.length} clasificadas · ${classScore.bad} intentos incorrectos`;
+  const feedbackPanel=$('#classifierFeedbackPanel');
+  if(feedbackPanel){
+    feedbackPanel.className='eco-classifier-feedback '+(correct?'is-correct':'is-incorrect');
+    feedbackPanel.innerHTML='<strong>'+(correct?'✓ Bien clasificado: ':'↻ Revisa tu elección: ')+c.name+'</strong><span>'+c.explanation+(correct?'':' La familia correcta es <strong>'+c.answer+'</strong>. Puedes mover la tarjeta a esa categoría.')+'</span>';
   }
-  $('#scoreBox').textContent=`${classScore.ok} aciertos · ${classScore.bad} errores`;
   const card=document.querySelector('.eco-drag-card[data-card="'+c.id+'"]');
   if(card){
     card.classList.toggle('eco-card-correct',correct);
     card.classList.toggle('eco-card-wrong',!correct);
-    card.querySelector('.eco-drag-result').textContent=(correct?'✓ Correcto. ':'✕ Inténtalo de nuevo. ')+c.explanation;
+    card.querySelector('.eco-drag-result').textContent=(correct?'✓ Correcto. ':'↻ Intenta de nuevo. ')+c.explanation+(correct?'':' Clasificación correcta: '+c.answer+'.');
     card.setAttribute('aria-label',c.name+'. '+(correct?'Correcto. ':'Incorrecto. ')+c.explanation);
     if(correct){card.classList.add('eco-card-answered');card.setAttribute('aria-disabled','true');card.tabIndex=-1;}
     const destination=document.querySelector('.eco-drop-zone[data-category="'+choice+'"] .eco-drop-items');
@@ -723,7 +740,7 @@ function classifyDrop(id,choice){
 }
 function renderClassifier(){
   selectedClassifierId=null;
-  $('#classifierGrid').innerHTML='<div class="eco-classifier-intro"><strong>Arrastra y clasifica</strong><span>19 tarjetas · 4 categorías</span></div>'+
+  $('#classifierGrid').innerHTML='<div class="eco-classifier-intro"><strong>Arrastra y clasifica</strong><span>19 tarjetas · 4 categorías</span></div><div class="eco-classifier-feedback" id="classifierFeedbackPanel" role="status" aria-live="polite"><strong>Selecciona un recurso o una tecnología.</strong><span>Después de cada respuesta verás la explicación y, si es necesario, la categoría correcta.</span></div>'+
   '<div class="eco-classifier-columns">'+
   '<section class="eco-classifier-column eco-classifier-resources"><h3>Tipos de energía y tecnologías</h3><div class="eco-card-bank">'+classifierCards.map(c=>'<div class="eco-drag-card" tabindex="0" role="button" data-card="'+c.id+'" aria-label="Seleccionar '+c.name+' para clasificar"><div class="eco-drag-grip" aria-hidden="true">⠿</div><div class="eco-drag-copy"><strong>'+c.name+'</strong><small>'+c.type+'</small><div class="eco-drag-result" aria-live="polite"></div></div><span class="eco-drag-hand" aria-hidden="true">↗</span></div>').join('')+'</div></section>'+
   '<section class="eco-classifier-column eco-classifier-categories"><h3>Grupo al que pertenecen</h3><div class="eco-drop-zones">'+classifierCategories.map(k=>'<div class="eco-drop-zone" role="button" tabindex="0" data-category="'+k+'" aria-label="Soltar en '+k+'"><div class="eco-drop-heading"><span class="eco-drop-icon">'+({Fósil:'🛢️',Nuclear:'☢️',Renovable:'🌿',Contextual:'⚙️'}[k])+'</span><strong>'+k+'</strong><small>'+(k==='Contextual'?'Depende del combustible':'Suelta aquí')+'</small></div><div class="eco-drop-items" aria-label="Elementos clasificados como '+k+'"></div></div>').join('')+'</div></section></div>';
@@ -790,7 +807,7 @@ function finishClassifierDrag(e,cancelled){
 }
 function endClassifierDrag(e){finishClassifierDrag(e,false)}
 function cancelClassifierDrag(e){finishClassifierDrag(e,true)}
-$('#resetClassifier').addEventListener('click',()=>{classScore={ok:0,bad:0,answered:new Set()};$('#scoreBox').textContent='0 aciertos · 0 errores';renderClassifier();});
+$('#resetClassifier').addEventListener('click',()=>{classScore={ok:0,bad:0,answered:new Set()};$('#scoreBox').textContent='0 de 19 clasificadas · 0 intentos incorrectos';renderClassifier();});
 
 // ---------- Conversiones ----------
 const flows={
@@ -804,16 +821,16 @@ const flows={
     ['Carbón','Combustible fósil sólido con energía química.'],['Combustión','Libera calor en la caldera.'],['Vapor','El calor produce vapor a presión.'],['Turbina','El vapor impulsa la turbina.'],['Electricidad','El generador produce energía eléctrica.']
   ],
   'Uranio':[
-    ['Uranio','Combustible nuclear; no es renovable.'],['Fisión','La división de núcleos libera energía.'],['Calor','La energía de fisión se convierte en calor.'],['Vapor','El calor permite producir vapor.'],['Electricidad','La turbina y el generador convierten la energía en electricidad.']
+    ['Uranio','Combustible nuclear no renovable; contiene núcleos que pueden fisionarse.'],['Fisión','La fisión libera energía que se transfiere al sistema de refrigeración del reactor.'],['Calor','El calor se transfiere al agua o a un circuito de generación de vapor, según el diseño.'],['Vapor','Se obtiene vapor para accionar la turbina.'],['Turbina','El vapor hace girar la turbina y transforma energía térmica en mecánica.'],['Generador','El generador convierte la rotación del eje en electricidad.']
   ],
   'Radiación solar':[
-    ['Radiación solar','Recurso renovable que transporta energía electromagnética.'],['Efecto fotovoltaico','Los semiconductores convierten fotones en corriente eléctrica.'],['Electricidad','La salida eléctrica se acondiciona para su uso o inyección a red.']
+    ['Radiación solar','Recurso renovable que aporta energía electromagnética.'],['Celdas fotovoltaicas','Los semiconductores producen electricidad de corriente continua por efecto fotovoltaico.'],['Inversor','La electrónica de potencia puede convertir corriente continua en alterna apta para la red.'],['Electricidad','La energía eléctrica se entrega a cargas o a la red; hay pérdidas de conversión.']
   ],
   'Viento':[
-    ['Viento','El aire en movimiento posee energía cinética.'],['Energía cinética','El rotor capta parte de esa energía.'],['Aerogenerador','El tren mecánico y generador transforman el movimiento.'],['Electricidad','La energía eléctrica se acondiciona para la red.']
+    ['Viento','El aire en movimiento transporta energía cinética.'],['Rotor','Las palas captan parte de la energía del aire y la convierten en rotación.'],['Generador','El eje transmite energía mecánica al generador eléctrico.'],['Acondicionamiento','La electrónica adapta frecuencia y tensión antes de entregar la electricidad.']
   ],
   'Agua':[
-    ['Agua','Puede almacenar energía potencial por altura o aportar energía cinética por flujo.'],['Energía potencial/cinética','El desnivel y caudal permiten realizar trabajo.'],['Turbina','El agua hace girar la turbina.'],['Electricidad','El generador convierte la energía mecánica en eléctrica.']
+    ['Agua','El agua almacenada o en movimiento posee energía potencial gravitatoria o cinética.'],['Flujo hidráulico','El desnivel y el caudal suministran energía al sistema.'],['Turbina','El flujo hace girar la turbina, produciendo energía mecánica.'],['Generador','El eje de la turbina mueve un generador y produce electricidad.']
   ]
 };
 let activeFlow='Gas natural';
